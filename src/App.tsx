@@ -46,21 +46,21 @@ function App() {
   }
   return (
     <>
-      <div>
+      <div className='flex flex-col items-center gap-4 mb-8'>
         <h1>Sign Up</h1>
         <input value={email} placeholder='email' onChange={e => setEmail(e.target.value)} type='email'/>
         <input value={name} placeholder='name' onChange={e => setName(e.target.value)}/>
         <input value={password} placeholder='password' onChange={e => setPassword(e.target.value)} type='password'/>
 
-        <button onClick={() => signUpUser()}>Sign up</button>
+        <button className='px-4 py-1 outline outline-1 rounded' onClick={() => signUpUser()}>Sign up</button>
       </div>
 
-      <div>
+      <div className='flex flex-col items-center gap-4'>
         <h1>Login</h1>
         <input value={email} placeholder='email' onChange={e => setEmail(e.target.value)} type='email'/>
         <input value={password} placeholder='password' onChange={e => setPassword(e.target.value)} type='password'/>
 
-        <button onClick={() => logInUser()}>Login</button>
+        <button className='px-4 py-1 outline outline-1 rounded' onClick={() => logInUser()}>Login</button>
       </div>
 
       {error && <p>{error}</p>}
