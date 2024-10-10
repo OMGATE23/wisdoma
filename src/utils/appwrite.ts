@@ -1,4 +1,4 @@
-import { Client, Account } from 'appwrite';
+import { Client, Account, Databases } from 'appwrite';
 
 const client = new Client()
 
@@ -10,4 +10,5 @@ client
 // Create an instance of the Account service
 const account = new Account(client);
 
-export { client, account };
+const databases = new Databases(client)
+export { client, account, databases };
