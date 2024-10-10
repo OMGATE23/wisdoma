@@ -1,15 +1,16 @@
-import { Link, redirect } from "react-router-dom"
+import { redirect } from "react-router-dom"
 import { useAuthContext } from "../../utils/hooks"
-import { checkForRootFolder, createRootFolder, getAllFilesAndFoldersFromParentID } from "../../utils/db"
-import { defaultRootFolder } from "../../utils/constants"
+import { checkForRootFolder, getAllFilesAndFoldersFromParentID } from "../../utils/db"
 import { useEffect, useState } from "react"
-import { FilesAndFolder, Resp_Folder } from "../../types"
+import { FilesAndFolder } from "../../types"
+import Header from "../../components/Header"
+import Sidebar from "../../components/Sidebar"
+import RootFolder from "../../components/dashboard/RootFolder"
 
 
 export default function Dashboard() {
 
-  const {user, logout, loading} = useAuthContext()
-  const [rootFolder, setRootFolder] = useState<Resp_Folder | null>(null)
+  const {user, loading} = useAuthContext()
   const [filesAndFolder, setFilesAndFolder] = useState<FilesAndFolder>({
     files: [],
     folders: []
@@ -17,29 +18,30 @@ export default function Dashboard() {
 
   useEffect(() => {
     if(!loading && user) {
+      async function fetchRootFolder() {
+        try {
+          if(!loading && user) {
+            const resp = await checkForRootFolder(user.id);
+            if(resp.error) throw new Error(resp.message);
+
+            const parent_id = resp.data.$id;
+    
+            const filesAndFolders = await getAllFilesAndFoldersFromParentID(parent_id, user.id)
+            
+            if(filesAndFolders.error) throw new Error(filesAndFolders.message)
+            setFilesAndFolder(filesAndFolders.data)
+          }
+        } catch(err) {
+          console.log(err)
+        }
+      }
+
       fetchRootFolder()
     }
   },[user, loading])
 
 
-  async function fetchRootFolder() {
-    try {
-      if(!loading && user) {
-        const resp = await checkForRootFolder(user.id);
-        if(resp.error) throw new Error(resp.message);
-        setRootFolder(resp.data);
-
-        const parent_id = resp.data.$id;
-
-        const filesAndFolders = await getAllFilesAndFoldersFromParentID(parent_id, user.id)
-        
-        if(filesAndFolders.error) throw new Error(filesAndFolders.message)
-        setFilesAndFolder(filesAndFolders.data)
-      }
-    } catch(err) {
-      console.log(err)
-    }
-  }
+  
   if(loading) {
     return <></>
   }
@@ -49,21 +51,10 @@ export default function Dashboard() {
 
   return (
     <div>
-      Hello {user!.name}
-
-      <Link to='/notes/3452'>Note 3452</Link>
-
-      <button onClick={logout}>Logout</button>
-
-      <div className="h-[60vh] flex justify-center items-center">
-        <button
-          className="outline outline-1 outline-zinc-200 rounded-md p-2"
-          onClick={() => {
-            createRootFolder({...defaultRootFolder, user_id: user!.id})
-          }}
-        >
-          Create a document
-        </button>
+      <Header />
+      <div className="min-h-[100vh] flex items-stretch">
+        <Sidebar collection={filesAndFolder}/>
+        <RootFolder collection={filesAndFolder} />
       </div>
     </div>
   )

@@ -26,14 +26,15 @@ export interface Folder {
   created_at: string,
 }
 
-export interface Note {
+export interface File {
   title: string, 
   note_content: string,
   parent_id: string,
   created_at: string,
   updated_at: string,
   user_id: string,
-  is_public: boolean
+  is_public: boolean,
+  is_starred: boolean
 }
 
 export interface Resp_Folder extends Folder {
