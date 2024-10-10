@@ -25,7 +25,7 @@ function App() {
     },
     {
       path: 'dashboard',
-      element: user ? <Dashboard /> : <SignUp />
+      element: user ? <Dashboard /> : <Navigate to="/signup" replace />
     },
     {
       path: 'notes/:id',

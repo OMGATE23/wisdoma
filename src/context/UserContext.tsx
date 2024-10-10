@@ -1,12 +1,14 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { User, UserLoginSignUpFormat } from "../types";
+import { User, PromiseResponse } from "../types";
 import { account } from '../utils/appwrite';
+import { createRootFolder } from "../utils/db";
+import { defaultRootFolder } from "../utils/constants";
 
 interface UserContextProps {
   user: User | null;
-  login: (email: string, password: string) => Promise<UserLoginSignUpFormat>;
-  signup: (email: string, password: string, name: string) => Promise<UserLoginSignUpFormat>;
-  logout: () => Promise<UserLoginSignUpFormat>;
+  login: (email: string, password: string) => Promise<PromiseResponse<null>>;
+  signup: (email: string, password: string, name: string) => Promise<PromiseResponse<null>>;
+  logout: () => Promise<PromiseResponse<null>>;
   loading: boolean
 }
 
@@ -16,7 +18,7 @@ export const AuthContextProvider = ({children} : {children: ReactNode}) : JSX.El
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const login = async (email: string, password: string): Promise<UserLoginSignUpFormat> => {
+  const login = async (email: string, password: string): Promise<PromiseResponse<null>> => {
     try {
       await account.createEmailPasswordSession(email, password);
       const currentUser = await account.get();
@@ -26,7 +28,7 @@ export const AuthContextProvider = ({children} : {children: ReactNode}) : JSX.El
         name: currentUser.name,
         email: currentUser.email,
       });
-      return {error: false}
+      return {error: false, data: null}
     } catch (error: unknown) {
       if (error instanceof Error) {
         return {error: true, message: error.message}
@@ -35,11 +37,21 @@ export const AuthContextProvider = ({children} : {children: ReactNode}) : JSX.El
     }
   };
 
-  const signup = async (email: string, password: string, name: string) : Promise<UserLoginSignUpFormat> => {
+  const signup = async (email: string, password: string, name: string) : Promise<PromiseResponse<null>> => {
     try {
-      await account.create('unique()', email, password, name);
+      const user = await account.create('unique()', email, password, name);
+      console.log(">>> loggining in ")
+      
       await login(email, password);
-      return {error: false}
+
+      console.log(">>> creating root folder ")
+      const rootFolderResp = await createRootFolder({...defaultRootFolder, user_id: user.$id})
+
+      if(rootFolderResp.error){
+        console.log(">>> err msg",rootFolderResp.message)
+      }
+ 
+      return {error: false, data: null}
     } catch (error: unknown) {
       if (error instanceof Error) {
         return {error: true, message: error.message}
@@ -48,11 +60,11 @@ export const AuthContextProvider = ({children} : {children: ReactNode}) : JSX.El
     }
   };
 
-  const logout = async (): Promise<UserLoginSignUpFormat> => {
+  const logout = async (): Promise<PromiseResponse<null>> => {
     try {
       await account.deleteSession('current');
       setUser(null);
-      return {error: false}
+      return {error: false, data: null}
     } catch (error: unknown) {
       if (error instanceof Error) {
         return {error: true, message: error.message}
