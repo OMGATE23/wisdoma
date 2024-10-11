@@ -40,16 +40,10 @@ export const AuthContextProvider = ({children} : {children: ReactNode}) : JSX.El
   const signup = async (email: string, password: string, name: string) : Promise<PromiseResponse<null>> => {
     try {
       const user = await account.create('unique()', email, password, name);
-      console.log(">>> loggining in ")
       
       await login(email, password);
 
-      console.log(">>> creating root folder ")
-      const rootFolderResp = await createRootFolder({...defaultRootFolder, user_id: user.$id})
-
-      if(rootFolderResp.error){
-        console.log(">>> err msg",rootFolderResp.message)
-      }
+      await createRootFolder({...defaultRootFolder, user_id: user.$id})
  
       return {error: false, data: null}
     } catch (error: unknown) {

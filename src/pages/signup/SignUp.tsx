@@ -11,7 +11,7 @@ function SignUp() {
 
   async function signUpUser() {
     const resp = await signup(email, password, name);
-    redirect('/dashboard')
+    redirect('/folder')
     if(resp.error) {
       setError(resp.message)
     } else {
@@ -21,7 +21,7 @@ function SignUp() {
 
   async function logInUser() {
     const resp = await login(email, password);
-    redirect('/dashboard')
+    redirect('/folder')
     if(resp.error) {
       setError(resp.message)
     } else {

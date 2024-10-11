@@ -21,15 +21,19 @@ function App() {
     },
     {
       path: 'signup',
-      element: user ? <Navigate to="/dashboard" replace /> : <SignUp />
+      element: user ? <Navigate to="/folder" replace /> : <SignUp />
     },
     {
-      path: 'dashboard',
+      path: 'folder',
       element: user ? <Dashboard /> : <Navigate to="/signup" replace />
     },
     {
-      path: 'notes/:id',
-      element: user ? <Notes /> : <Navigate to="/signup" replace />
+      path: 'folder/:id',
+      element: user ? <Dashboard /> : <Navigate to="/signup" replace />
+    },
+    {
+      path: 'note/:id',
+      element: <Notes />
     }
   ])
   return (

@@ -24,3 +24,12 @@ export function generateRandomString(length: number = 10): string {
   }
   return result;
 }
+
+export function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number) {
+  let timeoutId: ReturnType<typeof setTimeout>;
+
+  return (...args: T): void => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+}
