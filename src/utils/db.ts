@@ -1,4 +1,4 @@
-import { DocumentList, FilesAndFolder, Folder, Note, PromiseResponse, Resp_File, Resp_Folder } from "../types";
+import { DocumentList, FilesAndFolder, Folder, File, PromiseResponse, Resp_File, Resp_Folder } from "../types";
 import { databases } from "./appwrite";
 import { ID, Query } from "appwrite";
 import { commonErrorHandling, getCurrentDateISOString } from "./helpers";
@@ -32,7 +32,7 @@ export async function createRootFolder(folder_data: Folder): Promise<PromiseResp
   }
 }
 
-export async function createFile(file_data: Note): Promise<PromiseResponse<Resp_File>> {
+export async function createFile(file_data: File): Promise<PromiseResponse<Resp_File>> {
   try {
     const resp = await databases.createDocument(
       import.meta.env.VITE_DATABASE_ID,
@@ -139,5 +139,64 @@ export async function getAllFilesAndFoldersFromParentID(parent_id: string, user_
     }
   } catch(error: unknown) {
     return commonErrorHandling(error);
+  }
+}
+
+
+export async function getFileById(note_id: string, user_id: string): Promise<PromiseResponse<Resp_File>> {
+  try {
+    const resp = await databases.getDocument(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_NOTES_COLLECTION_ID,
+      note_id
+    )
+    const file = resp as unknown as Resp_File;
+
+    if(file.user_id === user_id || file.is_public) {
+      return {error: false, data: file}
+    } else  {
+      throw new Error("Couldn't find the note you were looking for")
+    }
+  } catch(error: unknown) {
+    return commonErrorHandling(error);
+  }
+}
+
+export async function getFolderById(folder_id: string, user_id: string): Promise<PromiseResponse<Resp_Folder>> {
+  try {
+    const resp = await databases.getDocument(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_FOLDER_COLLECTION_ID,
+      folder_id
+    )
+    const folder = resp as unknown as Resp_Folder;
+
+    if(folder.user_id === user_id || folder.is_public) {
+      return {error: false, data: folder}
+    } else  {
+      throw new Error("Couldn't find the folder you were looking for")
+    }
+  } catch(error: unknown) {
+    return commonErrorHandling(error);
+  }
+}
+
+
+export async function saveNoteContent(noteId: string, content: string): Promise<PromiseResponse<null>>  {
+  try {
+    const response = await databases.updateDocument(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_NOTES_COLLECTION_ID,
+      noteId,
+      {
+        note_content: content,
+      }
+    );
+
+    if (response.error) throw new Error(response.message);
+
+    return {error: false, data: null}
+  } catch (error: unknown) {
+    return commonErrorHandling(error)
   }
 }
