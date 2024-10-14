@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
-import { FilesAndFolder, Resp_File } from "../types"
+import { NotesAndFolder, Resp_Note } from "../types"
 
 interface Props {
-  collection: FilesAndFolder
+  collection: NotesAndFolder
 }
 export default function Sidebar(props: Props) {
-  const [starredNotes, setStarredNotes] = useState<Resp_File[]>([]);
+  const [starredNotes, setStarredNotes] = useState<Resp_Note[]>([]);
 
   useEffect(() => {
     const starredNotes = props.collection.files.filter(note => note.is_starred);
