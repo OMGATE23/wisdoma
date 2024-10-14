@@ -10,13 +10,13 @@ interface ModalProps {
 
 const InputModal = (props: ModalProps) => {
   const [inputValue, setInputValue] = useState("");
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null);
   const handleSubmit = async () => {
     if (inputValue.trim()) {
-      setError(null)
+      setError(null);
       const resp = await props.onSubmit(inputValue);
 
-      if(resp.error) {
+      if (resp.error) {
         setError(resp.message);
       } else {
         setInputValue("");
@@ -40,13 +40,16 @@ const InputModal = (props: ModalProps) => {
         />
         {error && <h2 className="text-sm text-red-500 mb-4">{error}</h2>}
         <div className="mt-4 flex justify-end gap-2">
-          <button className="px-4 py-2 bg-gray-300 rounded" onClick={props.onClose}>
+          <button
+            className="px-4 py-2 bg-gray-300 rounded"
+            onClick={props.onClose}
+          >
             Cancel
           </button>
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded"
             onClick={handleSubmit}
-            disabled={inputValue.trim() === ''}
+            disabled={inputValue.trim() === ""}
           >
             Submit
           </button>

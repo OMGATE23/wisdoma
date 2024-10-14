@@ -1,31 +1,34 @@
-
-export function getCurrentDateISOString() : string {
-  return new Date().toISOString()
+export function getCurrentDateISOString(): string {
+  return new Date().toISOString();
 }
 
 interface PromiseError {
-  error: true,
-  message: string
+  error: true;
+  message: string;
 }
 
 export function commonErrorHandling(error: unknown): PromiseError {
-  if(error instanceof Error) {
-    return {error: true, message: error.message}
+  if (error instanceof Error) {
+    return { error: true, message: error.message };
   }
 
-  return {error: true, message: "Unknown error occured"}
+  return { error: true, message: "Unknown error occured" };
 }
 
 export function generateRandomString(length: number = 10): string {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
 }
 
-export function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number) {
+export function debounce<T extends unknown[]>(
+  fn: (...args: T) => void,
+  delay: number
+) {
   let timeoutId: ReturnType<typeof setTimeout>;
 
   return (...args: T): void => {
