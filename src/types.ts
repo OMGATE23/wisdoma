@@ -24,9 +24,10 @@ export interface Folder {
   is_root: boolean,
   is_public: boolean,
   created_at: string,
+  parent_title: string,
 }
 
-export interface File {
+export interface Note {
   title: string, 
   note_content: string,
   parent_id: string,
@@ -34,7 +35,8 @@ export interface File {
   updated_at: string,
   user_id: string,
   is_public: boolean,
-  is_starred: boolean
+  is_starred: boolean,
+  parent_title: string
 }
 
 export interface Resp_Folder extends Folder {
@@ -44,7 +46,7 @@ export interface Resp_Folder extends Folder {
   type: 'folder'
 }
 
-export interface Resp_File extends File {
+export interface Resp_Note extends Note {
   $updatedAt: string,
   $createdAt: string,
   $id: string,
@@ -56,7 +58,19 @@ export interface DocumentList<T> {
   documents: T[]
 }
 
-export interface FilesAndFolder {
-  files: Resp_File[],
+export interface NotesAndFolder {
+  files: Resp_Note[],
   folders: Resp_Folder[]
+}
+
+export interface Connection {
+  user_id: string,
+  source_id: string,
+  destination_ids: string[]
+}
+
+export interface Resp_Connection extends Connection {
+  $updatedAt: string,
+  $createdAt: string,
+  $id: string,
 }
