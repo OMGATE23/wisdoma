@@ -1,6 +1,6 @@
-import { NotesAndFolder, Resp_Note } from "../../types";
+import { NoteFolderPropType, NotesAndFolder, Resp_Note } from "../../types";
 import { debounce } from "../../utils/helpers";
-import { saveNoteContent } from "../../utils/db";
+import { createConnection, saveNoteContent } from "../../utils/db";
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import FolderIcon from "../../icons/FolderIcon";
 import DocumentIcon from "../../icons/DocumentIcon";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "../../utils/hooks";
 
 interface Props {
   note: Resp_Note;
@@ -28,6 +29,7 @@ interface Props {
 
 export default function NoteEditor(props: Props) {
   const [initialContent, setInitialContent] = useState(props.note.note_content);
+  const { user } = useAuthContext();
   useEffect(() => {
     setInitialContent(props.note.note_content);
   }, [props.note.note_content]);
@@ -49,7 +51,9 @@ export default function NoteEditor(props: Props) {
     } as const,
     {
       render: (props) => {
-        const link = `/${props.inlineContent.props.type === "folder" ? "folder" : "note"}/${props.inlineContent.props.id}`;
+        const link = `/${
+          props.inlineContent.props.type === "folder" ? "folder" : "note"
+        }/${props.inlineContent.props.id}`;
         return (
           <span
             key={props.inlineContent.props.id}
@@ -105,25 +109,23 @@ export default function NoteEditor(props: Props) {
         : undefined,
   });
   const debouncedSave = debounce(() => {
-    console.log(editor.document);
-
-    const arrayOfPropStrings: string[] = [];
+    const arrayOfPropStrings: NoteFolderPropType[] = [];
 
     editor.forEachBlock((block) => {
       const { content } = block;
 
       if (!content) return true;
 
-      console.log(content);
       if (Array.isArray(content)) {
         content.forEach((cont) => {
           if (cont && cont.type === "fileFolderTag") {
-            console.log(">>. a file folder tag", {
-              type: cont.type,
-              props: cont.props,
-            });
-
-            arrayOfPropStrings.push(JSON.stringify(cont.props));
+            const existingProp = arrayOfPropStrings.find(
+              (prop) =>
+                prop.id === cont.props.id && prop.type === cont.props.type
+            );
+            if (existingProp === undefined) {
+              arrayOfPropStrings.push(cont.props);
+            }
           }
         });
       } else if (
@@ -134,11 +136,13 @@ export default function NoteEditor(props: Props) {
           row.cells.forEach((cell) => {
             cell.forEach((cont) => {
               if (cont && cont.type === "fileFolderTag") {
-                console.log(">>> in table", {
-                  type: cont.type,
-                  props: cont.props,
-                });
-                arrayOfPropStrings.push(JSON.stringify(cont.props));
+                const existingProp = arrayOfPropStrings.find(
+                  (prop) =>
+                    prop.id === cont.props.id && prop.type === cont.props.type
+                );
+                if (existingProp === undefined) {
+                  arrayOfPropStrings.push(cont.props);
+                }
               }
             });
           });
@@ -148,7 +152,12 @@ export default function NoteEditor(props: Props) {
       return true;
     });
 
-    console.log(arrayOfPropStrings);
+    createConnection(
+      user?.id || "",
+      props.note.$id,
+      arrayOfPropStrings.map((prop) => JSON.stringify(prop))
+    );
+
     saveNoteContent(props.note.$id, JSON.stringify(editor.document));
   }, 500);
   return (

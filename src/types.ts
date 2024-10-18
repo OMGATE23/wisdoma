@@ -76,3 +76,13 @@ export interface Resp_Connection extends Connection {
   $createdAt: string;
   $id: string;
 }
+
+// export interface Pros_Connection_Dest_ID {
+
+// }
+
+export interface NoteFolderPropType {
+  type: string;
+  id: string;
+  title: string;
+}
