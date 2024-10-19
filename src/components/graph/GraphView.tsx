@@ -33,20 +33,12 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
     null
   );
   const [dragging, setDragging] = useState(false);
-  console.log(
-    ">>> hoverinfo",
-    hoverInfo,
-    `outline outline-1 outline-neutral-700 rounded-md p-2 absolute top-[${
-      hoverInfo ? hoverInfo.y : 0 + 10
-    }px] left-[${hoverInfo ? hoverInfo.x : 0 + 10}px]`
-  );
   useEffect(() => {
     if (!svgRef.current) return;
 
     const width = 928;
     const height = 600;
 
-    // Create copies of the nodes and links to avoid mutation
     const linksCopy = links.map((d) => ({ ...d }));
     const nodesCopy = nodes.map((d) => ({ ...d }));
 
@@ -66,7 +58,6 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
       setCurrentNode(null);
     }
 
-    // Create the force simulation
     const simulation = d3
       .forceSimulation<Node>(nodesCopy)
       .force(
@@ -78,7 +69,6 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
       .force("y", d3.forceY())
       .on("tick", ticked);
 
-    // Select and clear the SVG
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
@@ -87,9 +77,8 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
       .style("max-width", "100%")
       .style("height", "auto");
 
-    svg.selectAll("*").remove(); // Clear previous renders
+    svg.selectAll("*").remove();
 
-    // Add links (lines) for each link
     const link = svg
       .append("g")
       .attr("stroke", "rgba(0,0,0,0.8)")
@@ -99,7 +88,6 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
       .join("line")
       .attr("stroke-width", "1");
 
-    // Add nodes (circles) for each node
     const node = svg
       .append("g")
       .attr("stroke", "#fff")
@@ -114,12 +102,20 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
       .call(drag(simulation))
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut)
-      .on("click", (_, d) => onClickNode(d)); // Attach the click handler here
+      .on("click", (_, d) => onClickNode(d));
 
-    // Add tooltips (node id as title)
+    const titles = svg
+      .append("g")
+      .selectAll("text")
+      .data(nodesCopy.filter((d) => d.type === "folder" && d.is_root !== true))
+      .join("text")
+      .attr("font-size", 12)
+      .attr("dx", 15)
+      .attr("dy", ".35em")
+      .text((d) => d.title);
+
     node.append("title").text((d) => d.id);
 
-    // Simulation tick function (update positions)
     function ticked() {
       link
         .attr("x1", (d) => (d.source as Node).x!)
@@ -128,9 +124,9 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
         .attr("y2", (d) => (d.target as Node).y!);
 
       node.attr("cx", (d) => d.x!).attr("cy", (d) => d.y!);
+      titles.attr("x", (d) => d.x! + 5).attr("y", (d) => d.y!);
     }
 
-    // Drag event handlers
     function drag(simulation: d3.Simulation<Node, Link>) {
       function dragstarted(
         event: d3.D3DragEvent<SVGCircleElement, Node, Node>
@@ -163,9 +159,9 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
     }
 
     return () => {
-      simulation.stop(); // Clean up the simulation on unmount
+      simulation.stop();
     };
-  }, [nodes, links]); // Add onClickNode to the dependency array
+  }, [nodes, links]);
 
   return (
     <div className="h-[100vh] flex justify-center items-center">

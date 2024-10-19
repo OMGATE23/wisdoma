@@ -46,6 +46,7 @@ export default function Graph() {
           if (connections.error) throw new Error(connections.message);
 
           setConnections(connections.data);
+          console.log(">>> connections", connections.data);
           setLoading(false);
         } catch (err) {
           console.log(err);
@@ -89,12 +90,19 @@ export default function Graph() {
       .map((folder) => ({ source: folder.parent_id!, target: folder.$id })),
 
     // Link between items in destination_ids and source_id
-    // ...connections.flatMap(connection =>
-    //   connection.destination_ids.map(destination_id => ({
-    //     source: connection.source_id,
-    //     target: destination_id
-    //   }))
-    // ),
+    ...connections.flatMap((connection) =>
+      connection.destination_ids
+        .filter(
+          (destination_id) =>
+            collection.files.find(
+              (note) => note.$id === JSON.parse(destination_id).id
+            ) !== undefined
+        )
+        .map((destination_id) => ({
+          source: connection.source_id,
+          target: JSON.parse(destination_id).id,
+        }))
+    ),
   ];
 
   const handleClickNode = (node: {

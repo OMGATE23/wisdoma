@@ -5,7 +5,6 @@ import { getAllNotesAndFolders, getNoteById } from "../../utils/db";
 import { useAuthContext } from "../../utils/hooks";
 import { commonErrorHandling } from "../../utils/helpers";
 import NoteEditor from "../../components/note/NoteEditor";
-import OptionsEditor from "../../components/note/OptionsEditor";
 
 export default function Notes() {
   const [note, setNote] = useState<Resp_Note | null>(null);
@@ -63,7 +62,6 @@ export default function Notes() {
         <div className="flex flex-col gap-4 items-center">
           <Link to={`/folder/${note.parent_id}`}>Parent Folder</Link>
           title: {note.title}
-          <OptionsEditor />
           <NoteEditor
             note={note}
             editable={note.user_id === user?.id}
