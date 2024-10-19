@@ -8,6 +8,7 @@ import Home from "./pages/home/Home";
 import SignUp from "./pages/signup/SignUp";
 import Notes from "./pages/notes/Notes";
 import Dashboard from "./pages/dashboard/Dashboard";
+import Graph from "./pages/graph/Graph";
 
 function App() {
   const { user, loading } = useAuthContext();
@@ -36,6 +37,10 @@ function App() {
     {
       path: "note/:id",
       element: <Notes />,
+    },
+    {
+      path: "graph",
+      element: user ? <Graph /> : <Navigate to="/signup" replace />,
     },
   ]);
   return <RouterProvider router={router} />;

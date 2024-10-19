@@ -7,3 +7,22 @@
 * {
   font-family: "Inter", sans-serif;
 }
+
+g {
+  cursor: pointer;
+}
+
+.pop-in {
+  opacity: 0;
+  animation: pop-in 100ms ease-in-out 200ms forwards;
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

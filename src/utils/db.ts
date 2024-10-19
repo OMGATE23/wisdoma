@@ -6,6 +6,7 @@ import {
   PromiseResponse,
   Resp_Note,
   Resp_Folder,
+  Resp_Connection,
 } from "../types";
 import { databases } from "./appwrite";
 import { ID, Query } from "appwrite";
@@ -300,7 +301,7 @@ export async function saveNoteContent(
   content: string
 ): Promise<PromiseResponse<null>> {
   try {
-    const response = await databases.updateDocument(
+    await databases.updateDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_NOTES_COLLECTION_ID,
       noteId,
@@ -308,8 +309,6 @@ export async function saveNoteContent(
         note_content: content,
       }
     );
-
-    if (response.error) throw new Error(response.message);
 
     return { error: false, data: null };
   } catch (error: unknown) {
@@ -367,6 +366,65 @@ export async function getAllNotesAndFolders(
       },
     };
   } catch (error: unknown) {
+    return commonErrorHandling(error);
+  }
+}
+
+export async function createConnection(
+  user_id: string,
+  source_id: string,
+  destination_ids: string[]
+): Promise<PromiseResponse<null>> {
+  try {
+    const allDocuments = await databases.listDocuments(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
+      [Query.equal("source_id", [source_id]), Query.equal("user_id", [user_id])]
+    );
+
+    if (allDocuments.total === 0) {
+      await databases.createDocument(
+        import.meta.env.VITE_DATABASE_ID,
+        import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
+        ID.unique(),
+        {
+          source_id: source_id,
+          user_id: user_id,
+          destination_ids: destination_ids,
+        }
+      );
+    } else {
+      const id = allDocuments.documents[0].$id;
+
+      await databases.updateDocument(
+        import.meta.env.VITE_DATABASE_ID,
+        import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
+        id,
+        { destination_ids }
+      );
+    }
+
+    return { error: false, data: null };
+  } catch (error: unknown) {
+    return commonErrorHandling(error);
+  }
+}
+
+export async function getConnections(
+  user_id: string
+): Promise<PromiseResponse<Resp_Connection[]>> {
+  try {
+    const allDocuments = await databases.listDocuments(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
+      [Query.equal("user_id", [user_id])]
+    );
+
+    return {
+      error: false,
+      data: allDocuments.documents as unknown as Resp_Connection[],
+    };
+  } catch (error) {
     return commonErrorHandling(error);
   }
 }
