@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PromiseResponse } from "../types";
+import { toast } from "sonner";
 
 interface ModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ const DeleteModal = (props: ModalProps) => {
       setError(resp.message);
     } else {
       props.onClose();
+      toast.success('Deleted successfully');
     }
   };
 

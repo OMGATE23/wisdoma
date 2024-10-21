@@ -10,6 +10,8 @@ import { NotesAndFolder, PromiseResponse, Resp_Folder } from "../../types";
 import Header from "../../components/Header";
 import Sidebar from "../../components/Sidebar";
 import RootFolder from "../../components/dashboard/RootFolder";
+import { toast } from "sonner";
+import { commonErrorHandling } from "../../utils/helpers";
 
 export default function Dashboard() {
   const { user, loading: userLoading } = useAuthContext();
@@ -30,7 +32,10 @@ export default function Dashboard() {
       } else {
         resp = await getFolderById(id, user!.id);
       }
-      if (resp.error) throw new Error(resp.message);
+      if (resp.error) {
+        toast.error(resp.message)
+        return;
+      };
       setRootFolder(resp.data);
       const parent_id = resp.data.$id;
 
@@ -39,11 +44,15 @@ export default function Dashboard() {
         user!.id
       );
 
-      if (filesAndFolders.error) throw new Error(filesAndFolders.message);
+      if (filesAndFolders.error) {
+        toast.error(filesAndFolders.message)
+        return;
+      };
       setNotesAndFolder(filesAndFolders.data);
       setLoading(false);
     } catch (err) {
-      console.log(err);
+      const error = commonErrorHandling(err);
+      toast.error(error.message)
     }
   }
 

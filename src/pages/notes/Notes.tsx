@@ -9,10 +9,10 @@ import {
 import { useAuthContext } from "../../utils/hooks";
 import { commonErrorHandling } from "../../utils/helpers";
 import NoteEditor from "../../components/note/NoteEditor";
+import { toast } from "sonner";
 
 export default function Notes() {
   const [note, setNote] = useState<Resp_Note | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [collection, setCollection] = useState<NotesAndFolder>({
     files: [],
@@ -31,13 +31,13 @@ export default function Notes() {
           const resp = await getNoteById(id, user?.id || "");
           const collectionResp = await getAllNotesAndFolders(user?.id || "");
           if (resp.error) {
-            setError(resp.message);
+            toast.error(resp.message);
             return;
           }
           setNote(resp.data);
           setTitle(resp.data.title);
           if (collectionResp.error) {
-            setError(collectionResp.message);
+            toast.error(collectionResp.message);
             return;
           }
 
@@ -46,7 +46,7 @@ export default function Notes() {
         }
       } catch (error: unknown) {
         const err = commonErrorHandling(error);
-        setError(err.message);
+        toast.error(err.message);
       }
     }
 
@@ -93,7 +93,6 @@ export default function Notes() {
           />
         </div>
       )}
-      {error && <p>{error}</p>}
     </div>
   );
 }
