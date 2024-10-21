@@ -41,6 +41,7 @@ export const AuthContextProvider = ({
       });
       return { error: false, data: null };
     } catch (error: unknown) {
+      console.log(">>> login error", error);
       if (error instanceof Error) {
         return { error: true, message: error.message };
       }
@@ -62,6 +63,7 @@ export const AuthContextProvider = ({
 
       return { error: false, data: null };
     } catch (error: unknown) {
+      console.log(">>> ses error", error);
       if (error instanceof Error) {
         return { error: true, message: error.message };
       }

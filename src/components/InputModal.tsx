@@ -6,10 +6,14 @@ interface ModalProps {
   title: string;
   onClose: () => void;
   onSubmit: (inputValue: string) => Promise<PromiseResponse<null>>;
+  placeholder?: string;
+  defaultValue?: string;
 }
 
 const InputModal = (props: ModalProps) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState<string>(
+    props.defaultValue ? props.defaultValue : ""
+  );
   const [error, setError] = useState<string | null>(null);
   const handleSubmit = async () => {
     if (inputValue.trim()) {
@@ -35,7 +39,7 @@ const InputModal = (props: ModalProps) => {
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder={`Enter ${props.title}`}
+          placeholder={props.placeholder || `Enter ${props.title}`}
           className="w-full p-2 border border-gray-300 rounded"
         />
         {error && <h2 className="text-sm text-red-500 mb-4">{error}</h2>}
@@ -47,7 +51,7 @@ const InputModal = (props: ModalProps) => {
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-200"
             onClick={handleSubmit}
             disabled={inputValue.trim() === ""}
           >

@@ -20,34 +20,35 @@ export default function Dashboard() {
   const [rootFolder, setRootFolder] = useState<Resp_Folder | null>(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams<{ id: string }>();
+
+  async function fetchRootFolder() {
+    try {
+      setLoading(true);
+      let resp: PromiseResponse<Resp_Folder> | null = null;
+      if (!id) {
+        resp = await checkForRootFolder(user!.id);
+      } else {
+        resp = await getFolderById(id, user!.id);
+      }
+      if (resp.error) throw new Error(resp.message);
+      setRootFolder(resp.data);
+      const parent_id = resp.data.$id;
+
+      const filesAndFolders = await getAllNotesAndFoldersFromParentID(
+        parent_id,
+        user!.id
+      );
+
+      if (filesAndFolders.error) throw new Error(filesAndFolders.message);
+      setNotesAndFolder(filesAndFolders.data);
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   useEffect(() => {
     if (!userLoading && user) {
-      async function fetchRootFolder() {
-        try {
-          setLoading(true);
-          let resp: PromiseResponse<Resp_Folder> | null = null;
-          if (!id) {
-            resp = await checkForRootFolder(user!.id);
-          } else {
-            resp = await getFolderById(id, user!.id);
-          }
-          if (resp.error) throw new Error(resp.message);
-          setRootFolder(resp.data);
-          const parent_id = resp.data.$id;
-
-          const filesAndFolders = await getAllNotesAndFoldersFromParentID(
-            parent_id,
-            user!.id
-          );
-
-          if (filesAndFolders.error) throw new Error(filesAndFolders.message);
-          setNotesAndFolder(filesAndFolders.data);
-          setLoading(false);
-        } catch (err) {
-          console.log(err);
-        }
-      }
-
       fetchRootFolder();
     }
   }, [user, id, userLoading]);
@@ -64,13 +65,12 @@ export default function Dashboard() {
       <Header />
       <div className="min-h-[90vh] flex items-center justify-center gap-8 w-[90%] mx-auto">
         <Sidebar collection={filesAndFolder} />
-        {rootFolder && (
-          <RootFolder
-            collection={filesAndFolder}
-            rootFolder={rootFolder}
-            loading={loading}
-          />
-        )}
+        <RootFolder
+          collection={filesAndFolder}
+          rootFolder={rootFolder}
+          loading={loading}
+          resetRootAndCollection={fetchRootFolder}
+        />
       </div>
     </div>
   );

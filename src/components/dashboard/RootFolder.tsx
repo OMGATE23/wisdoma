@@ -2,7 +2,13 @@ import { NotesAndFolder, PromiseResponse, Resp_Folder } from "../../types";
 import Button from "../Button";
 import DocumentIcon from "../../icons/DocumentIcon";
 import FolderIcon from "../../icons/FolderIcon";
-import { createNote, createFolder } from "../../utils/db";
+import {
+  createNote,
+  createFolder,
+  updateNoteTitle,
+  deleteNote,
+  deleteFolder,
+} from "../../utils/db";
 import {
   commonErrorHandling,
   getCurrentDateISOString,
@@ -11,11 +17,13 @@ import { useAuthContext } from "../../utils/hooks";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import InputModal from "../InputModal";
+import FolderContent from "./FolderContent";
 
 interface Props {
   collection: NotesAndFolder;
-  rootFolder: Resp_Folder;
+  rootFolder: Resp_Folder | null;
   loading: boolean;
+  resetRootAndCollection: () => Promise<void>;
 }
 export default function RootFolder(props: Props) {
   const { user } = useAuthContext();
@@ -30,13 +38,13 @@ export default function RootFolder(props: Props) {
       const resp = await createNote({
         title: title,
         note_content: "",
-        parent_id: props.rootFolder.$id,
+        parent_id: props.rootFolder!.$id,
         created_at: getCurrentDateISOString(),
         updated_at: getCurrentDateISOString(),
         user_id: user!.id,
         is_public: false,
         is_starred: false,
-        parent_title: props.rootFolder.title,
+        parent_title: props.rootFolder!.title,
       });
 
       if (resp.error) {
@@ -60,9 +68,9 @@ export default function RootFolder(props: Props) {
     try {
       const resp = await createFolder(
         user!.id,
-        props.rootFolder.$id,
+        props.rootFolder!.$id,
         title,
-        props.rootFolder.title
+        props.rootFolder!.title
       );
 
       if (resp.error) {
@@ -78,9 +86,72 @@ export default function RootFolder(props: Props) {
     }
   }
 
+  async function handleRenameNote(
+    noteId: string,
+    val: string
+  ): Promise<PromiseResponse<null>> {
+    try {
+      const resp = await updateNoteTitle(noteId, val);
+
+      if (resp.error) return resp;
+
+      props.resetRootAndCollection();
+      return { error: false, data: null };
+    } catch (error) {
+      return commonErrorHandling(error);
+    }
+  }
+
+  async function handleRenameFolder(
+    folderId: string,
+    val: string
+  ): Promise<PromiseResponse<null>> {
+    try {
+      const resp = await updateNoteTitle(folderId, val);
+
+      if (resp.error) return resp;
+
+      props.resetRootAndCollection();
+      return { error: false, data: null };
+    } catch (error) {
+      return commonErrorHandling(error);
+    }
+  }
+
+  async function handleDeleteNote(
+    noteId: string
+  ): Promise<PromiseResponse<null>> {
+    try {
+      const resp = await deleteNote(noteId);
+
+      if (resp.error) return resp;
+
+      props.resetRootAndCollection();
+      return { error: false, data: null };
+    } catch (error) {
+      return commonErrorHandling(error);
+    }
+  }
+
+  async function handleDeleteFolder(
+    noteId: string
+  ): Promise<PromiseResponse<null>> {
+    try {
+      const resp = await deleteFolder(noteId);
+
+      if (resp.error) return resp;
+
+      props.resetRootAndCollection();
+
+      return { error: false, data: null };
+    } catch (error) {
+      return commonErrorHandling(error);
+    }
+  }
+
   return (
     <div className="flex bg-white flex-col gap-4 items-center justify-center w-[80%] h-[80vh] outline outline-1 outline-neutral-200 rounded-md p-4 overflow-auto">
-      {props.loading ? (
+      {props.loading || props.rootFolder === null ? (
         <p>Loading...</p>
       ) : (
         <>
@@ -132,45 +203,42 @@ export default function RootFolder(props: Props) {
                   onClick={() => setFolderModalOpen(true)}
                 />
               </div>
-              <div className="w-full grid grid-cols-6 gap-4">
+              <div className="w-full grid grid-cols-2 gap-6">
                 {props.collection.files.map((file) => (
-                  <Link
-                    key={file.$id}
-                    to={`/note/${file.$id}`}
-                    className="flex flex-col p-4 rounded"
-                  >
-                    <DocumentIcon size={32} />
-                    {file.title}
-                  </Link>
+                  <FolderContent
+                    content={file}
+                    handleDelete={handleDeleteNote}
+                    handleRename={handleRenameNote}
+                  />
                 ))}
 
                 {props.collection.folders.map((folder) => (
-                  <Link
-                    key={folder.$id}
-                    to={`/folder/${folder.$id}`}
-                    className="flex flex-col p-4 rounded"
-                  >
-                    <FolderIcon size={32} />
-                    {folder.title}
-                  </Link>
+                  <FolderContent
+                    content={folder}
+                    handleDelete={handleDeleteFolder}
+                    handleRename={handleRenameFolder}
+                  />
                 ))}
               </div>
             </>
           )}
-          <InputModal
-            isOpen={isFolderModalOpen}
-            title="Folder Name"
-            onClose={() => setFolderModalOpen(false)}
-            onSubmit={createFolderInRoot}
-          />
+          {props.rootFolder && (
+            <InputModal
+              isOpen={isFolderModalOpen}
+              title="Folder Name"
+              onClose={() => setFolderModalOpen(false)}
+              onSubmit={createFolderInRoot}
+            />
+          )}
 
-          {/* Note Creation Modal */}
-          <InputModal
-            isOpen={isNoteModalOpen}
-            title="Note Name"
-            onClose={() => setNoteModalOpen(false)}
-            onSubmit={createNoteInRoot}
-          />
+          {props.rootFolder && (
+            <InputModal
+              isOpen={isNoteModalOpen}
+              title="Note Name"
+              onClose={() => setNoteModalOpen(false)}
+              onSubmit={createNoteInRoot}
+            />
+          )}
         </>
       )}
     </div>

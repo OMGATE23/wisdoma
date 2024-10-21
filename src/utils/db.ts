@@ -118,6 +118,7 @@ export async function checkForRootFolder(
       data: folder.documents[0] as unknown as Resp_Folder,
     };
   } catch (error: unknown) {
+    console.log(">>> error", error);
     return commonErrorHandling(error);
   }
 }
@@ -424,6 +425,80 @@ export async function getConnections(
       error: false,
       data: allDocuments.documents as unknown as Resp_Connection[],
     };
+  } catch (error) {
+    return commonErrorHandling(error);
+  }
+}
+
+export async function updateNoteTitle(
+  noteId: string,
+  title: string
+): Promise<PromiseResponse<{ title: string }>> {
+  try {
+    const proc_title = title.trim() !== "" ? title : "Untitled";
+    await databases.updateDocument(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_NOTES_COLLECTION_ID,
+      noteId,
+      {
+        title: proc_title,
+      }
+    );
+
+    return { error: false, data: { title: proc_title } };
+  } catch (error: unknown) {
+    return commonErrorHandling(error);
+  }
+}
+
+export async function updateFolderTitle(
+  noteId: string,
+  title: string
+): Promise<PromiseResponse<{ title: string }>> {
+  try {
+    const proc_title = title.trim() !== "" ? title : "Untitled";
+    await databases.updateDocument(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_FOLDER_COLLECTION_ID,
+      noteId,
+      {
+        title: proc_title,
+      }
+    );
+
+    return { error: false, data: { title: proc_title } };
+  } catch (error: unknown) {
+    return commonErrorHandling(error);
+  }
+}
+
+export async function deleteNote(
+  noteId: string
+): Promise<PromiseResponse<null>> {
+  try {
+    await databases.deleteDocument(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_NOTES_COLLECTION_ID,
+      noteId
+    );
+
+    return { error: false, data: null };
+  } catch (error) {
+    return commonErrorHandling(error);
+  }
+}
+
+export async function deleteFolder(
+  noteId: string
+): Promise<PromiseResponse<null>> {
+  try {
+    await databases.deleteDocument(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_FOLDER_COLLECTION_ID,
+      noteId
+    );
+
+    return { error: false, data: null };
   } catch (error) {
     return commonErrorHandling(error);
   }
