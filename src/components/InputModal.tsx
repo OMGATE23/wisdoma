@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PromiseResponse } from "../types";
+import { toast } from "sonner";
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface ModalProps {
   onSubmit: (inputValue: string) => Promise<PromiseResponse<null>>;
   placeholder?: string;
   defaultValue?: string;
+  successMessage ?: string;
 }
 
 const InputModal = (props: ModalProps) => {
@@ -25,6 +27,7 @@ const InputModal = (props: ModalProps) => {
       } else {
         setInputValue("");
         props.onClose();
+        toast.success(props.successMessage ? props.successMessage : 'Created Successfully')
       }
     }
   };

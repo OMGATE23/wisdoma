@@ -3,6 +3,7 @@ import { User, PromiseResponse } from "../types";
 import { account } from "../utils/appwrite";
 import { createRootFolder } from "../utils/db";
 import { defaultRootFolder } from "../utils/constants";
+import { toast } from "sonner";
 
 interface UserContextProps {
   user: User | null;
@@ -41,7 +42,6 @@ export const AuthContextProvider = ({
       });
       return { error: false, data: null };
     } catch (error: unknown) {
-      console.log(">>> login error", error);
       if (error instanceof Error) {
         return { error: true, message: error.message };
       }
@@ -63,7 +63,6 @@ export const AuthContextProvider = ({
 
       return { error: false, data: null };
     } catch (error: unknown) {
-      console.log(">>> ses error", error);
       if (error instanceof Error) {
         return { error: true, message: error.message };
       }
@@ -94,6 +93,7 @@ export const AuthContextProvider = ({
           email: currentUser.email,
         });
       } catch {
+        toast.error("Couldn't load user, try again later")
         setUser(null);
       } finally {
         setLoading(false);

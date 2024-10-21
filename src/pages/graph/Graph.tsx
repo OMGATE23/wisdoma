@@ -13,6 +13,8 @@ import {
 } from "../../utils/db";
 import GraphView from "../../components/graph/GraphView";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { commonErrorHandling } from "../../utils/helpers";
 
 export default function Graph() {
   const [collection, setCollection] = useState<NotesAndFolder>({
@@ -24,7 +26,6 @@ export default function Graph() {
   const { user, loading: userLoading } = useAuthContext();
   const navigate = useNavigate();
 
-  console.log(connections);
   useEffect(() => {
     if (!userLoading && user) {
       async function fetchRootFolder() {
@@ -33,23 +34,32 @@ export default function Graph() {
           let resp: PromiseResponse<Resp_Folder> | null = null;
           resp = await checkForRootFolder(user!.id);
 
-          if (resp.error) throw new Error(resp.message);
+          if (resp.error) {
+            toast.error(resp.message)
+            return;
+          };
 
           const filesAndFolders = await getAllNotesAndFolders(user!.id);
-          if (filesAndFolders.error) throw new Error(filesAndFolders.message);
+          if (filesAndFolders.error) {
+            toast.error(filesAndFolders.message)
+            return;
+          };
           setCollection({
             files: filesAndFolders.data.files,
             folders: filesAndFolders.data.folders,
           });
 
           const connections = await getConnections(user!.id);
-          if (connections.error) throw new Error(connections.message);
+          if (connections.error) {
+            toast.error(connections.message)
+            return;
+          };
 
           setConnections(connections.data);
-          console.log(">>> connections", connections.data);
           setLoading(false);
         } catch (err) {
-          console.log(err);
+          const error = commonErrorHandling(err);
+          toast.error(error.message);
           setLoading(false);
         }
       }

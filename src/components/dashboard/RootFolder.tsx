@@ -53,7 +53,6 @@ export default function RootFolder(props: Props) {
 
       const fileId = resp.data.$id;
 
-      console.log("redirecting", fileId);
       navigate(`/note/${fileId}`);
 
       return { error: false, data: null };
@@ -78,7 +77,6 @@ export default function RootFolder(props: Props) {
       }
       const folderId = resp.data.$id;
 
-      console.log("redirecting", folderId);
       navigate(`/folder/${folderId}`);
       return { error: false, data: null };
     } catch (error) {

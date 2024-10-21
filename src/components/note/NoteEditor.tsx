@@ -174,7 +174,6 @@ export default function NoteEditor(props: Props) {
           <SuggestionMenuController
             triggerCharacter={"["}
             getItems={async (query: string) => {
-              console.log(query);
               return filterSuggestionItems(
                 getNoteFolderMenuItems(editor, props.collection),
                 query

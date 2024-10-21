@@ -1,21 +1,19 @@
 import { useState } from "react";
 import { useAuthContext } from "../../utils/hooks";
 import { redirect } from "react-router-dom";
+import { toast } from "sonner";
 
 function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { user, signup, login, logout, loading } = useAuthContext();
-  const [error, setError] = useState<string | null>(null);
 
   async function signUpUser() {
     const resp = await signup(email, password, name);
     redirect("/folder");
     if (resp.error) {
-      setError(resp.message);
-    } else {
-      setError(null);
+      toast.error(resp.message)
     }
   }
 
@@ -23,9 +21,7 @@ function SignUp() {
     const resp = await login(email, password);
     redirect("/folder");
     if (resp.error) {
-      setError(resp.message);
-    } else {
-      setError(null);
+      toast.error(resp.message)
     }
   }
 
@@ -40,7 +36,6 @@ function SignUp() {
         <p>email: {user.email}</p>
         <p>id : {user.id}</p>
         <button onClick={logout}>Logout</button>
-        {error && <p>{error}</p>}
       </div>
     );
   }
@@ -96,8 +91,6 @@ function SignUp() {
           Login
         </button>
       </div>
-
-      {error && <p>{error}</p>}
     </>
   );
 }
