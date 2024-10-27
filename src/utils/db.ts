@@ -452,7 +452,7 @@ export async function updateNoteTitle(
 }
 
 export async function updateFolderTitle(
-  noteId: string,
+  folderId: string,
   title: string
 ): Promise<PromiseResponse<{ title: string }>> {
   try {
@@ -460,7 +460,7 @@ export async function updateFolderTitle(
     await databases.updateDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
-      noteId,
+      folderId,
       {
         title: proc_title,
       }

@@ -161,14 +161,14 @@ export default function NoteEditor(props: Props) {
     saveNoteContent(props.note.$id, JSON.stringify(editor.document));
   }, 500);
   return (
-    <div>
-      <div className="flex flex-col justify-center items-center gap-8 w-[80vw]">
+    <div className="w-full">
+      <div className="">
         <BlockNoteView
           editable={props.editable}
           onChange={() => {
             debouncedSave();
           }}
-          className="w-[80%]"
+          className="w-full"
           editor={editor}
         >
           <SuggestionMenuController
