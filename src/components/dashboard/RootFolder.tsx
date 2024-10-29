@@ -151,7 +151,9 @@ export default function RootFolder(props: Props) {
   return (
     <div className="bg-white flex-col gap-4 h-full w-full rounded-md p-4 mr-8">
       {props.loading || props.rootFolder === null ? (
-        <p>Loading...</p>
+        <div className="font-lora flex justify-center items-center h-[100vh]">
+        Good things come to those who wait...
+      </div>
       ) : (
         <>
           <div className="flex flex-col gap-2 mb-4">

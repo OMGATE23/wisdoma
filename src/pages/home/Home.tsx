@@ -3,7 +3,24 @@ import HeroGraph from "../../components/home/HeroGraph";
 
 export default function Home() {
   return (
-    <div className="flex items-center">
+    <div>
+      <div
+        className="py-4 px-8 flex justify-end items-center gap-4"
+      >
+        <Link
+          className="font-lora py-1.5 px-4 rounded shadow-sm text-sm outline outline-1 outline-neutral-700 text-white bg-neutral-900"
+          to='/signup'
+        >
+          Sign up
+        </Link>
+        <Link
+          className="font-lora py-1.5 px-4 rounded shadow-sm text-sm outline outline-1 outline-neutral-700 "
+          to='login'
+        >
+          Login
+        </Link>
+      </div>
+      <div className="flex items-center">
       <div className="min-h-[60vh] flex flex-col px-32 justify-center">
         <h1 className="font-lora text-6xl font-[600]">Wisdoma</h1>
         <h2 className="font-lora text-xl font-[600] text-neutral-700">
@@ -22,6 +39,7 @@ export default function Home() {
         </Link>
       </div>
       <HeroGraph />
+    </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ interface ModalProps {
   onSubmit: (inputValue: string) => Promise<PromiseResponse<null>>;
   placeholder?: string;
   defaultValue?: string;
-  successMessage ?: string;
+  successMessage?: string;
 }
 
 const InputModal = (props: ModalProps) => {
@@ -27,7 +27,9 @@ const InputModal = (props: ModalProps) => {
       } else {
         setInputValue("");
         props.onClose();
-        toast.success(props.successMessage ? props.successMessage : 'Created Successfully')
+        toast.success(
+          props.successMessage ? props.successMessage : "Created Successfully"
+        );
       }
     }
   };
@@ -43,18 +45,18 @@ const InputModal = (props: ModalProps) => {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={props.placeholder || `Enter ${props.title}`}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-2 outline outline-1 outline-neutral-400 rounded"
         />
         {error && <h2 className="text-sm text-red-500 mb-4">{error}</h2>}
         <div className="mt-4 flex justify-end gap-2">
           <button
-            className="px-4 py-2 bg-gray-300 rounded"
+            className="px-4 py-2 bg-neutral-100 rounded"
             onClick={props.onClose}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-200"
+            className="px-4 py-2 bg-neutral-900 text-white rounded disabled:cursor-not-allowed"
             onClick={handleSubmit}
             disabled={inputValue.trim() === ""}
           >

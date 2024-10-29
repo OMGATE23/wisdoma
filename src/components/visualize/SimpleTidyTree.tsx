@@ -138,7 +138,7 @@ export default function SimpleTidyTree(props: Props) {
 
     const data = getTidyTreeDataFromCollection(props.collection);
 
-    const width = window.innerWidth * 0.9;
+    const width = window.innerWidth * 0.7;
 
     const root = d3.hierarchy(data);
     const dx = 20;
@@ -215,7 +215,7 @@ export default function SimpleTidyTree(props: Props) {
       )
       .attr("stroke", "white")
       .attr("paint-order", "stroke")
-      .attr("font-size", "0.8rem")
+      .attr("font-size", "0.7rem")
       .attr("fill", (d) => {
         if (focusedNodes === null) return "black";
         return focusedNodes.includes(d.data.data.$id)
@@ -261,7 +261,17 @@ export default function SimpleTidyTree(props: Props) {
           }}
         >
           <div className="outline outline-1 outline-neutral-300 shadow rounded-md p-4 bg-white">
-            <div className="py-2 px-4 w-full rounded flex items-center gap-2 outline outline-1 outline-neutral-300">
+            <div
+              onClick={() =>
+                handleClickNode({
+                  type: currentNode.type,
+                  $id: currentNode.$id,
+                  is_root:
+                    currentNode.type === "folder" ? currentNode.is_root : false,
+                })
+              }
+              className="py-2 cursor-pointer px-4 w-full rounded flex items-center gap-2 outline outline-1 outline-neutral-300"
+            >
               <div className="outline outline-1 outline-neutral-200 rounded shadow p-1 flex item">
                 {currentNode.type === "folder" ? (
                   <FolderIcon size={20} />
@@ -277,13 +287,13 @@ export default function SimpleTidyTree(props: Props) {
                 {createType === null && (
                   <div className="flex justify-center items-center gap-2 py-2">
                     <button
-                      className="font-[300] text-sm py-1 px-2 rounded text-white bg-blue-600"
+                      className="font-[300] text-sm py-1 px-2 rounded text-white bg-neutral-900"
                       onClick={() => setCreateType("folder")}
                     >
                       Create Folder
                     </button>
                     <button
-                      className="font-[300] text-sm py-1 px-2 rounded text-white bg-green-500"
+                      className="font-[300] text-sm py-1 px-2 rounded text-black bg-neutral-100"
                       onClick={() => setCreateType("file")}
                     >
                       Create File
@@ -309,7 +319,7 @@ export default function SimpleTidyTree(props: Props) {
                             createFolderCurrentFolder(inputText);
                           }
                         }}
-                        className="bg-blue-700 text-white py-1 px-2 rounded"
+                        className="bg-neutral-900 text-white py-1 px-2 rounded"
                       >
                         Create {createType}
                       </button>

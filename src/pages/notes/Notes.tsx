@@ -50,6 +50,8 @@ export default function Notes() {
       } catch (error: unknown) {
         const err = commonErrorHandling(error);
         toast.error(err.message);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -67,17 +69,20 @@ export default function Notes() {
   const updateTitle = async () => {
     try {
       if (!note) return;
-      console.log(">>>title", title);
+      setLoading(true);
       await updateNoteTitle(note.$id, title);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      const error = commonErrorHandling(err);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
   return (
     <div className="h-[100vh]">
       <Header />
       <div className="flex items-stretch min-h-[100vh]">
-        <Sidebar />
+        <Sidebar reload={loading} />
         {note && !loading && (
           <div className="p-4 w-full">
             <BreadCrumb currentNode={note} />

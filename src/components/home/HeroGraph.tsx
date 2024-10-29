@@ -21,15 +21,30 @@ export default function Graphe() {
   useEffect(() => {
     if (!svgRef.current) return;
 
-    const nodes: Node[] = Array.from({ length: 50 }, (_, i) => ({
-      id: `Node ${i + 1}`,
-      group: i % 2,
-    }));
+    const nodes: Node[] = [
+      { id: "Hub 1", group: 1 },
+      { id: "Hub 2", group: 2 },
+      { id: "Hub 3", group: 3 },
+      ...Array.from({ length: 12 }, (_, i) => ({
+        id: `Node ${i + 1}`,
+        group: 1,
+      })),
+      ...Array.from({ length: 12 }, (_, i) => ({
+        id: `Node ${i + 13}`,
+        group: 2,
+      })),
+      ...Array.from({ length: 12 }, (_, i) => ({
+        id: `Node ${i + 25}`,
+        group: 3,
+      })),
+    ];
 
-    const links: Link[] = nodes.map((node, i) => ({
-      source: node.id,
-      target: nodes[(i + 1) % nodes.length].id,
-    }));
+    // Create individual stars by linking nodes to their respective hubs
+    const links: Link[] = [
+      ...nodes.slice(1, 13).map((node) => ({ source: "Hub 1", target: node.id })),
+      ...nodes.slice(13, 25).map((node) => ({ source: "Hub 2", target: node.id })),
+      ...nodes.slice(25, 37).map((node) => ({ source: "Hub 3", target: node.id })),
+    ];
 
     const width = 720;
     const height = 720;
@@ -78,7 +93,7 @@ export default function Graphe() {
       .forceSimulation<Node>(nodesCopy)
       .force(
         "link",
-        d3.forceLink<Node, Link>(linksCopy).id((d: Node) => d.id)
+        d3.forceLink<Node, Link>(linksCopy).id((d: Node) => d.id).distance(150) 
       )
       .force("charge", d3.forceManyBody())
       .force("x", d3.forceX())
@@ -111,7 +126,7 @@ export default function Graphe() {
       .selectAll<SVGCircleElement, Node>("circle")
       .data(nodesCopy)
       .join("circle")
-      .attr("r", 6)
+      .attr("r", 8)
       .attr("fill", "rgba(0,0,0,0.7)")
       .call(drag(simulation));
 

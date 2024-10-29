@@ -18,7 +18,11 @@ function SignUp() {
   }
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="font-lora flex justify-center items-center h-[100vh]">
+        Good things come to those who wait...
+      </div>
+    );
   }
   return (
     <>

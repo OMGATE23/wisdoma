@@ -17,6 +17,7 @@ import { commonErrorHandling } from "../../utils/helpers";
 import SimpleTidyTree from "../../components/visualize/SimpleTidyTree";
 import RadialTidyTree from "../../components/visualize/RadialTidyTree";
 import Header from "../../components/Header";
+import Sidebar from "../../components/Sidebar";
 
 export default function Graph() {
   const [collection, setCollection] = useState<NotesAndFolder>({
@@ -73,51 +74,58 @@ export default function Graph() {
   }, [user, userLoading]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="font-lora flex justify-center items-center h-[100vh]">
+        Good things come to those who wait...
+      </div>
+    );
   }
 
   return (
     <div>
       <Header />
       {!loading && (
-        <div>
-          <div className="flex items-center justify-center gap-0 mt-4">
-            <button
-              className={`border border-neutral-200 px-4 py-1 rounded-l ${
-                currentView === "graph" && "bg-neutral-200"
-              }`}
-              onClick={() => setCurrentView("graph")}
-            >
-              Graph
-            </button>
-            <button
-              className={`border border-neutral-200 px-4 py-1 ${
-                currentView === "simple-tidy" && "bg-neutral-200"
-              }`}
-              onClick={() => setCurrentView("simple-tidy")}
-            >
-              Simple Tree
-            </button>
-            <button
-              className={`border border-neutral-200 px-4 py-1 rounded-r ${
-                currentView === "radial-tidy" && "bg-neutral-200"
-              }`}
-              onClick={() => setCurrentView("radial-tidy")}
-            >
-              Radial Tree
-            </button>
+        <div className="flex ">
+          <Sidebar reload={loading} />
+          <div className="w-[80%]">
+            <div className="flex items-center justify-center gap-0 mt-4">
+              <button
+                className={`border border-neutral-200 px-4 py-1 rounded-l ${
+                  currentView === "graph" && "bg-neutral-200"
+                }`}
+                onClick={() => setCurrentView("graph")}
+              >
+                Graph
+              </button>
+              <button
+                className={`border border-neutral-200 px-4 py-1 ${
+                  currentView === "simple-tidy" && "bg-neutral-200"
+                }`}
+                onClick={() => setCurrentView("simple-tidy")}
+              >
+                Simple Tree
+              </button>
+              <button
+                className={`border border-neutral-200 px-4 py-1 rounded-r ${
+                  currentView === "radial-tidy" && "bg-neutral-200"
+                }`}
+                onClick={() => setCurrentView("radial-tidy")}
+              >
+                Radial Tree
+              </button>
+            </div>
+            <>
+              {currentView === "graph" && (
+                <GraphView collection={collection} connections={connections} />
+              )}
+              {currentView === "simple-tidy" && (
+                <SimpleTidyTree collection={collection} />
+              )}
+              {currentView === "radial-tidy" && (
+                <RadialTidyTree collection={collection} />
+              )}
+            </>
           </div>
-          <>
-            {currentView === "graph" && (
-              <GraphView collection={collection} connections={connections} />
-            )}
-            {currentView === "simple-tidy" && (
-              <SimpleTidyTree collection={collection} />
-            )}
-            {currentView === "radial-tidy" && (
-              <RadialTidyTree collection={collection} />
-            )}
-          </>
         </div>
       )}
     </div>

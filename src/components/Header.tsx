@@ -6,7 +6,9 @@ export default function Header() {
   const location = useLocation();
   return (
     <div className="text-neutral-900 border-b border-neutral-200  py-2.5 px-6 flex justify-between items-center mx-auto">
-      <div className="text-xl font-[600]">Wisdom</div>
+      <Link to="/" className="text-xl font-[600] font-lora">
+        Wisdoma
+      </Link>
 
       <div className="flex items-center gap-12">
         <Link

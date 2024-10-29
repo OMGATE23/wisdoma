@@ -74,7 +74,7 @@ export default function Dashboard() {
     <div className="h-[100vh]">
       <Header />
       <div className="h-full flex justify-center gap-8 mx-auto">
-        {!loading && <Sidebar />}
+        <Sidebar reload={loading} />
         <RootFolder
           collection={filesAndFolder}
           rootFolder={rootFolder}
