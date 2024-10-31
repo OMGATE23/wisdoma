@@ -7,15 +7,15 @@ import {
   Resp_Note,
   Resp_Folder,
   Resp_Connection,
-} from "../types";
-import { databases, storage } from "./appwrite";
-import { ID, Query } from "appwrite";
-import { commonErrorHandling, getCurrentDateISOString } from "./helpers";
-import { toast } from "sonner";
-import { defaultRootFolder } from "./constants";
+} from '../types';
+import { databases, storage } from './appwrite';
+import { ID, Query } from 'appwrite';
+import { commonErrorHandling, getCurrentDateISOString } from './helpers';
+import { toast } from 'sonner';
+import { defaultRootFolder } from './constants';
 
 export async function createRootFolder(
-  folder_data: Folder
+  folder_data: Folder,
 ): Promise<PromiseResponse<Resp_Folder>> {
   try {
     const resp = await databases.createDocument(
@@ -30,7 +30,7 @@ export async function createRootFolder(
         is_root: folder_data.is_root,
         is_public: folder_data.is_public,
         created_at: folder_data.created_at,
-      }
+      },
     );
     return { error: false, data: resp as unknown as Resp_Folder };
   } catch (error: unknown) {
@@ -41,18 +41,18 @@ export async function createRootFolder(
 }
 
 export async function createNote(
-  file_data: Note
+  file_data: Note,
 ): Promise<PromiseResponse<Resp_Note>> {
   try {
     const existingNotes = await getNotesByParentId(
       file_data.parent_id,
-      file_data.user_id
+      file_data.user_id,
     );
 
     if (existingNotes.error)
       return {
         error: true,
-        message: "Error creating file, try again in a bit",
+        message: 'Error creating file, try again in a bit',
       };
 
     const resp = await databases.createDocument(
@@ -68,7 +68,7 @@ export async function createNote(
         updated_at: file_data.updated_at,
         note_content: file_data.note_content,
         parent_title: file_data.parent_title,
-      }
+      },
     );
     return { error: false, data: resp as unknown as Resp_Note };
   } catch (error: unknown) {
@@ -77,13 +77,13 @@ export async function createNote(
 }
 
 export async function checkForRootFolder(
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Folder>> {
   try {
     const folder = await databases.listDocuments(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
-      [Query.equal("user_id", [user_id]), Query.equal("is_root", [true])]
+      [Query.equal('user_id', [user_id]), Query.equal('is_root', [true])],
     );
 
     if (folder.total === 0) {
@@ -104,8 +104,6 @@ export async function checkForRootFolder(
       };
     }
 
-    console.log(folder);
-
     return {
       error: false,
       data: folder.documents[0] as unknown as Resp_Folder,
@@ -121,7 +119,7 @@ export async function createFolder(
   user_id: string,
   parent_id: string,
   title: string,
-  parent_title: string
+  parent_title: string,
 ): Promise<PromiseResponse<Resp_Folder>> {
   try {
     const existingFolders = await getFoldersByParentId(parent_id, user_id);
@@ -129,10 +127,10 @@ export async function createFolder(
     if (existingFolders.error)
       return {
         error: true,
-        message: "Error creating folder, try again in a bit",
+        message: 'Error creating folder, try again in a bit',
       };
 
-    if (existingFolders.data.some((folder) => folder.title === title)) {
+    if (existingFolders.data.some(folder => folder.title === title)) {
       return {
         error: true,
         message: `Folder with the name "${title}" already exists in this folder.`,
@@ -149,7 +147,7 @@ export async function createFolder(
         parent_id: parent_id,
         created_at: getCurrentDateISOString(),
         parent_title: parent_title,
-      }
+      },
     );
 
     return { error: false, data: resp as unknown as Resp_Folder };
@@ -162,26 +160,26 @@ export async function createFolder(
 
 export async function getFoldersByParentId(
   parent_id: string | null,
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Folder[]>> {
   try {
     let queries: string[] = [];
 
     if (parent_id) {
       queries = [
-        Query.equal("user_id", [user_id]),
-        Query.equal("parent_id", [parent_id]),
+        Query.equal('user_id', [user_id]),
+        Query.equal('parent_id', [parent_id]),
       ];
     } else {
       queries = [
-        Query.equal("user_id", [user_id]),
-        Query.equal("is_root", [true]),
+        Query.equal('user_id', [user_id]),
+        Query.equal('is_root', [true]),
       ];
     }
     const resp = await databases.listDocuments(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
-      queries
+      queries,
     );
     const folder = resp as unknown as DocumentList<Resp_Folder>;
     return { error: false, data: folder.documents };
@@ -192,27 +190,27 @@ export async function getFoldersByParentId(
 
 export async function getNotesByParentId(
   parent_id: string | null,
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Note[]>> {
   try {
     let queries: string[] = [];
 
     if (parent_id) {
       queries = [
-        Query.equal("user_id", [user_id]),
-        Query.equal("parent_id", [parent_id]),
+        Query.equal('user_id', [user_id]),
+        Query.equal('parent_id', [parent_id]),
       ];
     } else {
       queries = [
-        Query.equal("user_id", [user_id]),
-        Query.equal("is_root", [true]),
+        Query.equal('user_id', [user_id]),
+        Query.equal('is_root', [true]),
       ];
     }
 
     const resp = await databases.listDocuments(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_NOTES_COLLECTION_ID,
-      queries
+      queries,
     );
     const folder = resp as unknown as DocumentList<Resp_Note>;
     return { error: false, data: folder.documents };
@@ -223,7 +221,7 @@ export async function getNotesByParentId(
 
 export async function getAllNotesAndFoldersFromParentID(
   parent_id: string,
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<NotesAndFolder>> {
   try {
     const filesResp = await getNotesByParentId(parent_id, user_id);
@@ -246,13 +244,13 @@ export async function getAllNotesAndFoldersFromParentID(
 
 export async function getNoteById(
   note_id: string,
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Note>> {
   try {
     const resp = await databases.getDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_NOTES_COLLECTION_ID,
-      note_id
+      note_id,
     );
     const file = resp as unknown as Resp_Note;
 
@@ -268,13 +266,13 @@ export async function getNoteById(
 
 export async function getFolderById(
   folder_id: string,
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Folder>> {
   try {
     const resp = await databases.getDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
-      folder_id
+      folder_id,
     );
     const folder = resp as unknown as Resp_Folder;
 
@@ -290,7 +288,7 @@ export async function getFolderById(
 
 export async function saveNoteContent(
   noteId: string,
-  content: string
+  content: string,
 ): Promise<PromiseResponse<null>> {
   try {
     await databases.updateDocument(
@@ -299,7 +297,7 @@ export async function saveNoteContent(
       noteId,
       {
         note_content: content,
-      }
+      },
     );
 
     return { error: false, data: null };
@@ -309,13 +307,13 @@ export async function saveNoteContent(
 }
 
 export async function getAllFolders(
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Folder[]>> {
   try {
     const resp = await databases.listDocuments(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
-      [Query.equal("user_id", [user_id])]
+      [Query.equal('user_id', [user_id])],
     );
     const folder = resp as unknown as DocumentList<Resp_Folder>;
     return { error: false, data: folder.documents };
@@ -325,13 +323,13 @@ export async function getAllFolders(
 }
 
 export async function getAllNotes(
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Note[]>> {
   try {
     const resp = await databases.listDocuments(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_NOTES_COLLECTION_ID,
-      [Query.equal("user_id", [user_id])]
+      [Query.equal('user_id', [user_id])],
     );
     const folder = resp as unknown as DocumentList<Resp_Note>;
     return { error: false, data: folder.documents };
@@ -341,7 +339,7 @@ export async function getAllNotes(
 }
 
 export async function getAllNotesAndFolders(
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<NotesAndFolder>> {
   try {
     const filesResp = await getAllNotes(user_id);
@@ -365,13 +363,16 @@ export async function getAllNotesAndFolders(
 export async function createConnection(
   user_id: string,
   source_id: string,
-  destination_ids: string[]
+  destination_ids: string[],
 ): Promise<PromiseResponse<null>> {
   try {
     const allDocuments = await databases.listDocuments(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
-      [Query.equal("source_id", [source_id]), Query.equal("user_id", [user_id])]
+      [
+        Query.equal('source_id', [source_id]),
+        Query.equal('user_id', [user_id]),
+      ],
     );
 
     if (allDocuments.total === 0) {
@@ -383,7 +384,7 @@ export async function createConnection(
           source_id: source_id,
           user_id: user_id,
           destination_ids: destination_ids,
-        }
+        },
       );
     } else {
       const id = allDocuments.documents[0].$id;
@@ -392,7 +393,7 @@ export async function createConnection(
         import.meta.env.VITE_DATABASE_ID,
         import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
         id,
-        { destination_ids }
+        { destination_ids },
       );
     }
 
@@ -403,13 +404,13 @@ export async function createConnection(
 }
 
 export async function getConnections(
-  user_id: string
+  user_id: string,
 ): Promise<PromiseResponse<Resp_Connection[]>> {
   try {
     const allDocuments = await databases.listDocuments(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
-      [Query.equal("user_id", [user_id])]
+      [Query.equal('user_id', [user_id])],
     );
 
     return {
@@ -423,17 +424,17 @@ export async function getConnections(
 
 export async function updateNoteTitle(
   noteId: string,
-  title: string
+  title: string,
 ): Promise<PromiseResponse<{ title: string }>> {
   try {
-    const proc_title = title.trim() !== "" ? title : "Untitled";
+    const proc_title = title.trim() !== '' ? title : 'Untitled';
     await databases.updateDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_NOTES_COLLECTION_ID,
       noteId,
       {
         title: proc_title,
-      }
+      },
     );
 
     return { error: false, data: { title: proc_title } };
@@ -444,17 +445,17 @@ export async function updateNoteTitle(
 
 export async function updateFolderTitle(
   folderId: string,
-  title: string
+  title: string,
 ): Promise<PromiseResponse<{ title: string }>> {
   try {
-    const proc_title = title.trim() !== "" ? title : "Untitled";
+    const proc_title = title.trim() !== '' ? title : 'Untitled';
     await databases.updateDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
       folderId,
       {
         title: proc_title,
-      }
+      },
     );
 
     return { error: false, data: { title: proc_title } };
@@ -464,14 +465,30 @@ export async function updateFolderTitle(
 }
 
 export async function deleteNote(
-  noteId: string
+  noteId: string,
 ): Promise<PromiseResponse<null>> {
   try {
     await databases.deleteDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_NOTES_COLLECTION_ID,
-      noteId
+      noteId,
     );
+
+    const allConnections = await databases.listDocuments(
+      import.meta.env.VITE_DATABASE_ID,
+      import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
+      [Query.equal('source_id', [noteId])],
+    );
+
+    const deletePromises = allConnections.documents.map(connection =>
+      databases.deleteDocument(
+        import.meta.env.VITE_DATABASE_ID,
+        import.meta.env.VITE_CONNECTIONS_COLLECTION_ID,
+        connection.$id,
+      ),
+    );
+
+    await Promise.all(deletePromises);
 
     return { error: false, data: null };
   } catch (error) {
@@ -480,13 +497,13 @@ export async function deleteNote(
 }
 
 export async function deleteFolder(
-  noteId: string
+  noteId: string,
 ): Promise<PromiseResponse<null>> {
   try {
     await databases.deleteDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
-      noteId
+      noteId,
     );
 
     return { error: false, data: null };
@@ -499,8 +516,8 @@ export async function uploadFile(file: File): Promise<string> {
   try {
     const response = await storage.createFile(
       import.meta.env.VITE_NOTES_IMG_BUCKET_ID,
-      "unique()",
-      file
+      'unique()',
+      file,
     );
 
     const imageUrl =
@@ -512,6 +529,6 @@ export async function uploadFile(file: File): Promise<string> {
   } catch (error) {
     const err = commonErrorHandling(error);
     toast.error(err.message);
-    return "/ERROR.jpg";
+    return '/ERROR.jpg';
   }
 }

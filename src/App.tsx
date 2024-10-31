@@ -2,14 +2,14 @@ import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
-} from "react-router-dom";
-import { useAuthContext } from "./utils/hooks";
-import Home from "./pages/home/Home";
-import SignUp from "./pages/signup/SignUp";
-import Notes from "./pages/notes/Notes";
-import Dashboard from "./pages/dashboard/Dashboard";
-import Graph from "./pages/graph/Graph";
-import Login from "./pages/login/Login";
+} from 'react-router-dom';
+import { useAuthContext } from './utils/hooks';
+import Home from './pages/home/Home';
+import SignUp from './pages/signup/SignUp';
+import Notes from './pages/notes/Notes';
+import Dashboard from './pages/dashboard/Dashboard';
+import Graph from './pages/graph/Graph';
+import Login from './pages/login/Login';
 
 function App() {
   const { user, loading } = useAuthContext();
@@ -24,31 +24,31 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: '/',
       element: <Home />,
     },
     {
-      path: "signup",
+      path: 'signup',
       element: user ? <Navigate to="/folder" replace /> : <SignUp />,
     },
     {
-      path: "login",
+      path: 'login',
       element: user ? <Navigate to="/folder" replace /> : <Login />,
     },
     {
-      path: "folder",
+      path: 'folder',
       element: user ? <Dashboard /> : <Navigate to="/signup" replace />,
     },
     {
-      path: "folder/:id",
+      path: 'folder/:id',
       element: user ? <Dashboard /> : <Navigate to="/signup" replace />,
     },
     {
-      path: "note/:id",
+      path: 'note/:id',
       element: <Notes />,
     },
     {
-      path: "visualize",
+      path: 'visualize',
       element: user ? <Graph /> : <Navigate to="/signup" replace />,
     },
   ]);

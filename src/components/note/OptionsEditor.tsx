@@ -1,5 +1,5 @@
-import { useState } from "react";
-import ToggleButton from "../ToggleButton";
+import { useState } from 'react';
+import ToggleButton from '../ToggleButton';
 
 export default function OptionsEditor() {
   const [value, setValue] = useState(false);

@@ -1,23 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   NotesAndFolder,
   PromiseResponse,
   Resp_Connection,
   Resp_Folder,
-} from "../../types";
-import { useAuthContext } from "../../utils/hooks";
+} from '../../types';
+import { useAuthContext } from '../../utils/hooks';
 import {
   checkForRootFolder,
   getAllNotesAndFolders,
   getConnections,
-} from "../../utils/db";
-import GraphView from "../../components/visualize/GraphView";
-import { toast } from "sonner";
-import { commonErrorHandling } from "../../utils/helpers";
-import SimpleTidyTree from "../../components/visualize/SimpleTidyTree";
-import RadialTidyTree from "../../components/visualize/RadialTidyTree";
-import Header from "../../components/Header";
-import Sidebar from "../../components/Sidebar";
+} from '../../utils/db';
+import GraphView from '../../components/visualize/GraphView';
+import { toast } from 'sonner';
+import { commonErrorHandling } from '../../utils/helpers';
+import SimpleTidyTree from '../../components/visualize/SimpleTidyTree';
+import RadialTidyTree from '../../components/visualize/RadialTidyTree';
+import Header from '../../components/Header';
+import Sidebar from '../../components/Sidebar';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorComponent from '../../components/ErrorComponent';
 
 export default function Graph() {
   const [collection, setCollection] = useState<NotesAndFolder>({
@@ -28,8 +30,8 @@ export default function Graph() {
   const [loading, setLoading] = useState(true);
   const { user, loading: userLoading } = useAuthContext();
   const [currentView, setCurrentView] = useState<
-    "graph" | "simple-tidy" | "radial-tidy"
-  >("graph");
+    'graph' | 'simple-tidy' | 'radial-tidy'
+  >('graph');
 
   useEffect(() => {
     if (!userLoading && user) {
@@ -91,38 +93,47 @@ export default function Graph() {
             <div className="flex items-center justify-center gap-0 mt-4">
               <button
                 className={`border border-neutral-200 px-4 py-1 rounded-l ${
-                  currentView === "graph" && "bg-neutral-200"
+                  currentView === 'graph' && 'bg-neutral-200'
                 }`}
-                onClick={() => setCurrentView("graph")}
+                onClick={() => setCurrentView('graph')}
               >
                 Graph
               </button>
               <button
                 className={`border border-neutral-200 px-4 py-1 ${
-                  currentView === "simple-tidy" && "bg-neutral-200"
+                  currentView === 'simple-tidy' && 'bg-neutral-200'
                 }`}
-                onClick={() => setCurrentView("simple-tidy")}
+                onClick={() => setCurrentView('simple-tidy')}
               >
                 Simple Tree
               </button>
               <button
                 className={`border border-neutral-200 px-4 py-1 rounded-r ${
-                  currentView === "radial-tidy" && "bg-neutral-200"
+                  currentView === 'radial-tidy' && 'bg-neutral-200'
                 }`}
-                onClick={() => setCurrentView("radial-tidy")}
+                onClick={() => setCurrentView('radial-tidy')}
               >
                 Radial Tree
               </button>
             </div>
             <>
-              {currentView === "graph" && (
-                <GraphView collection={collection} connections={connections} />
+              {currentView === 'graph' && (
+                <ErrorBoundary fallback={<ErrorComponent />}>
+                  <GraphView
+                    collection={collection}
+                    connections={connections}
+                  />
+                </ErrorBoundary>
               )}
-              {currentView === "simple-tidy" && (
-                <SimpleTidyTree collection={collection} />
+              {currentView === 'simple-tidy' && (
+                <ErrorBoundary fallback={<ErrorComponent />}>
+                  <SimpleTidyTree collection={collection} />
+                </ErrorBoundary>
               )}
-              {currentView === "radial-tidy" && (
-                <RadialTidyTree collection={collection} />
+              {currentView === 'radial-tidy' && (
+                <ErrorBoundary fallback={<ErrorComponent />}>
+                  <RadialTidyTree collection={collection} />
+                </ErrorBoundary>
               )}
             </>
           </div>

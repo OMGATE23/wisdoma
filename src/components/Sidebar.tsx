@@ -1,12 +1,12 @@
-import { Link } from "react-router-dom";
-import FolderIcon from "../icons/FolderIcon";
-import DocumentIcon from "../icons/DocumentIcon";
-import { NotesAndFolder } from "../types";
-import { useEffect, useRef, useState } from "react";
-import { commonErrorHandling } from "../utils/helpers";
-import { toast } from "sonner";
-import { getAllNotesAndFolders } from "../utils/db";
-import { useAuthContext } from "../utils/hooks";
+import { Link } from 'react-router-dom';
+import FolderIcon from '../icons/FolderIcon';
+import DocumentIcon from '../icons/DocumentIcon';
+import { NotesAndFolder } from '../types';
+import { useEffect, useRef, useState } from 'react';
+import { commonErrorHandling } from '../utils/helpers';
+import { toast } from 'sonner';
+import { getAllNotesAndFolders } from '../utils/db';
+import { useAuthContext } from '../utils/hooks';
 
 export default function Sidebar(props: { reload: boolean }) {
   const { user } = useAuthContext();
@@ -15,9 +15,9 @@ export default function Sidebar(props: { reload: boolean }) {
     files: [],
   });
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false); 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const panelRef = useRef<HTMLDivElement | null>(null)
+  const panelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     async function loadCollection() {
       try {
@@ -39,7 +39,10 @@ export default function Sidebar(props: { reload: boolean }) {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+      if (
+        panelRef.current &&
+        !panelRef.current.contains(event.target as Node)
+      ) {
         setSidebarOpen(false);
       }
     };
@@ -53,13 +56,16 @@ export default function Sidebar(props: { reload: boolean }) {
     <div>
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-20 left-4 z-50 p-2 rounded shadow outline outline-1 outline-neutral-400 md:hidden" 
+        className="fixed top-20 left-4 z-10 p-2 rounded shadow-sm bg-white outline outline-1 outline-neutral-200 md:hidden"
       >
         <DocumentIcon />
       </button>
 
       {sidebarOpen && (
-        <div ref={panelRef} className="fixed top-32 left-4 w-60 max-h-[80vh] bg-white border border-neutral-200 rounded shadow-md overflow-y-scroll p-4 z-40 md:hidden">
+        <div
+          ref={panelRef}
+          className="fixed top-32 left-4 w-60 max-h-[80vh] bg-white border border-neutral-200 rounded shadow-md overflow-y-scroll p-4 z-40 md:hidden"
+        >
           <div className="pb-4 border-b border-neutral-200">
             <p className="text-sm font-semibold text-neutral-700 mb-2">
               FOLDERS
@@ -70,18 +76,18 @@ export default function Sidebar(props: { reload: boolean }) {
               </p>
             )}
             {!loading &&
-              collection.folders.map((fol) => (
+              collection.folders.map(fol => (
                 <Link
                   key={fol.$id}
                   to={fol.is_root ? `/folder` : `/folder/${fol.$id}`}
                   className="flex gap-2 mb-1 text-neutral-800 hover:text-black hover:font-semibold transition-all duration-100"
-                  onClick={() => setSidebarOpen(false)} 
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <div className="w-4">
                     <FolderIcon size={16} />
                   </div>
                   <p className="text-sm text-neutral-800">
-                    {fol.is_root ? "Your Workspace" : fol.title}
+                    {fol.is_root ? 'Your Workspace' : fol.title}
                   </p>
                 </Link>
               ))}
@@ -93,7 +99,7 @@ export default function Sidebar(props: { reload: boolean }) {
               <p className="italic text-sm text-neutral-500">No notes found</p>
             )}
             {!loading &&
-              collection.files.map((file) => (
+              collection.files.map(file => (
                 <Link
                   key={file.$id}
                   to={`/note/${file.$id}`}
@@ -121,7 +127,7 @@ export default function Sidebar(props: { reload: boolean }) {
             </p>
           )}
           {!loading &&
-            collection.folders.map((fol) => (
+            collection.folders.map(fol => (
               <Link
                 key={fol.$id}
                 to={fol.is_root ? `/folder` : `/folder/${fol.$id}`}
@@ -131,7 +137,7 @@ export default function Sidebar(props: { reload: boolean }) {
                   <FolderIcon size={16} />
                 </div>
                 <p className="text-sm text-neutral-800 truncate max-w-56 md:max-w-[15vw]">
-                  {fol.is_root ? "Your Workspace" : fol.title}
+                  {fol.is_root ? 'Your Workspace' : fol.title}
                 </p>
               </Link>
             ))}
@@ -143,7 +149,7 @@ export default function Sidebar(props: { reload: boolean }) {
             <p className="italic text-sm text-neutral-500">No notes found</p>
           )}
           {!loading &&
-            collection.files.map((file) => (
+            collection.files.map(file => (
               <Link
                 key={file.$id}
                 to={`/note/${file.$id}`}

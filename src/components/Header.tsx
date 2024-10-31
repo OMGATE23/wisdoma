@@ -1,11 +1,12 @@
-import { Link, useLocation } from "react-router-dom";
-import { useAuthContext } from "../utils/hooks";
-import { useState } from "react";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../utils/hooks';
+import { useState } from 'react';
 
 export default function Header() {
   const { logout } = useAuthContext();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="text-neutral-900 border-b border-neutral-200 py-2.5 px-6 flex justify-between items-center mx-auto relative">
@@ -21,7 +22,7 @@ export default function Header() {
           Your Workspace
         </Link>
 
-        {!location.pathname.includes("visualize") && (
+        {!location.pathname.includes('visualize') && (
           <Link
             className="text-sm border-b border-white hover:border-black"
             to="/visualize"
@@ -33,7 +34,10 @@ export default function Header() {
 
       <button
         className="hidden md:block text-sm hover:bg-neutral-50 py-1 px-3 rounded transition-all duration-100"
-        onClick={logout}
+        onClick={() => {
+          logout();
+          navigate('/');
+        }}
       >
         Logout
       </button>
@@ -62,7 +66,7 @@ export default function Header() {
             Your Workspace
           </Link>
 
-          {!location.pathname.includes("visualize") && (
+          {!location.pathname.includes('visualize') && (
             <Link
               className="text-lg border-b border-white hover:border-black"
               to="/visualize"
@@ -76,6 +80,7 @@ export default function Header() {
             className="text-lg hover:bg-neutral-50 py-1 px-3 rounded transition-all duration-100"
             onClick={() => {
               logout();
+              navigate('/');
               setMenuOpen(false);
             }}
           >

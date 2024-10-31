@@ -1,17 +1,17 @@
-import { redirect, useParams } from "react-router-dom";
-import { useAuthContext } from "../../utils/hooks";
+import { redirect, useParams } from 'react-router-dom';
+import { useAuthContext } from '../../utils/hooks';
 import {
   checkForRootFolder,
   getAllNotesAndFoldersFromParentID,
   getFolderById,
-} from "../../utils/db";
-import { useEffect, useState } from "react";
-import { NotesAndFolder, PromiseResponse, Resp_Folder } from "../../types";
-import Sidebar from "../../components/Sidebar";
-import RootFolder from "../../components/dashboard/RootFolder";
-import { toast } from "sonner";
-import { commonErrorHandling } from "../../utils/helpers";
-import Header from "../../components/Header";
+} from '../../utils/db';
+import { useEffect, useState } from 'react';
+import { NotesAndFolder, PromiseResponse, Resp_Folder } from '../../types';
+import Sidebar from '../../components/Sidebar';
+import RootFolder from '../../components/dashboard/RootFolder';
+import { toast } from 'sonner';
+import { commonErrorHandling } from '../../utils/helpers';
+import Header from '../../components/Header';
 
 export default function Dashboard() {
   const { user, loading: userLoading } = useAuthContext();
@@ -41,7 +41,7 @@ export default function Dashboard() {
 
       const filesAndFolders = await getAllNotesAndFoldersFromParentID(
         parent_id,
-        user!.id
+        user!.id,
       );
 
       if (filesAndFolders.error) {
@@ -68,7 +68,7 @@ export default function Dashboard() {
     return <></>;
   }
   if (!user) {
-    redirect("/signup");
+    redirect('/signup');
   }
 
   return (
