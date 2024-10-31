@@ -5,12 +5,13 @@ import './index.css';
 import { AuthContextProvider } from './context/UserContext.tsx';
 import { Toaster } from 'sonner';
 import { ErrorBoundary } from 'react-error-boundary';
+import ErrorComponent from './components/ErrorComponent.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthContextProvider>
       <>
-        <ErrorBoundary fallback={<p>Something went wrong UwU</p>}>
+        <ErrorBoundary fallback={<ErrorComponent />}>
           <App />
           <Toaster />
         </ErrorBoundary>

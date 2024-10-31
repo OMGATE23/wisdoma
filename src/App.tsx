@@ -10,8 +10,6 @@ import Notes from './pages/notes/Notes';
 import Dashboard from './pages/dashboard/Dashboard';
 import Graph from './pages/graph/Graph';
 import Login from './pages/login/Login';
-import { ErrorBoundary } from 'react-error-boundary';
-import ErrorComponent from './components/ErrorComponent';
 
 function App() {
   const { user, loading } = useAuthContext();
