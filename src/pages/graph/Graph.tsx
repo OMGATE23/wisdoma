@@ -87,7 +87,7 @@ export default function Graph() {
       {!loading && (
         <div className="flex ">
           <Sidebar reload={loading} />
-          <div className="w-[80%]">
+          <div className="w-[100%] md:w-[80%]">
             <div className="flex items-center justify-center gap-0 mt-4">
               <button
                 className={`border border-neutral-200 px-4 py-1 rounded-l ${

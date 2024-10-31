@@ -8,34 +8,16 @@ import {
   Resp_Folder,
   Resp_Connection,
 } from "../types";
-import { databases } from "./appwrite";
+import { databases, storage } from "./appwrite";
 import { ID, Query } from "appwrite";
 import { commonErrorHandling, getCurrentDateISOString } from "./helpers";
+import { toast } from "sonner";
+import { defaultRootFolder } from "./constants";
 
 export async function createRootFolder(
   folder_data: Folder
 ): Promise<PromiseResponse<Resp_Folder>> {
   try {
-    const existingFolders = await getFoldersByParentId(
-      folder_data.parent_id,
-      folder_data.user_id
-    );
-
-    if (existingFolders.error)
-      return {
-        error: true,
-        message: "Error creating folder, try again in a bit",
-      };
-
-    if (
-      existingFolders.data.some((folder) => folder.title === folder_data.title)
-    ) {
-      return {
-        error: true,
-        message: `Folder with the name "${folder_data.title}" already exists in this folder.`,
-      };
-    }
-
     const resp = await databases.createDocument(
       import.meta.env.VITE_DATABASE_ID,
       import.meta.env.VITE_FOLDER_COLLECTION_ID,
@@ -52,11 +34,9 @@ export async function createRootFolder(
     );
     return { error: false, data: resp as unknown as Resp_Folder };
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      return { error: true, message: error.message };
-    }
-
-    return { error: true, message: "Unknown error occured" };
+    const err = commonErrorHandling(error);
+    toast.error(err.message);
+    return err;
   }
 }
 
@@ -74,13 +54,6 @@ export async function createNote(
         error: true,
         message: "Error creating file, try again in a bit",
       };
-
-    if (existingNotes.data.some((folder) => folder.title === file_data.title)) {
-      return {
-        error: true,
-        message: `Note with the name "${file_data.title}" already exists in this folder.`,
-      };
-    }
 
     const resp = await databases.createDocument(
       import.meta.env.VITE_DATABASE_ID,
@@ -113,13 +86,34 @@ export async function checkForRootFolder(
       [Query.equal("user_id", [user_id]), Query.equal("is_root", [true])]
     );
 
+    if (folder.total === 0) {
+      const root_folder = await createRootFolder({
+        ...defaultRootFolder,
+        user_id: user_id,
+      });
+
+      if (root_folder.error) {
+        const err = commonErrorHandling(root_folder.error);
+        toast.error(err.message);
+        return err;
+      }
+
+      return {
+        error: false,
+        data: root_folder.data,
+      };
+    }
+
+    console.log(folder);
+
     return {
       error: false,
       data: folder.documents[0] as unknown as Resp_Folder,
     };
   } catch (error: unknown) {
-    console.log(">>> error", error);
-    return commonErrorHandling(error);
+    const err = commonErrorHandling(error);
+    toast.error(err.message);
+    return err;
   }
 }
 
@@ -160,12 +154,9 @@ export async function createFolder(
 
     return { error: false, data: resp as unknown as Resp_Folder };
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(">>> ERR: ", error.message);
-      return { error: true, message: error.message };
-    }
-
-    return { error: true, message: "Unknown error occured" };
+    const err = commonErrorHandling(error);
+    toast.error(err.message);
+    return err;
   }
 }
 
@@ -501,5 +492,26 @@ export async function deleteFolder(
     return { error: false, data: null };
   } catch (error) {
     return commonErrorHandling(error);
+  }
+}
+
+export async function uploadFile(file: File): Promise<string> {
+  try {
+    const response = await storage.createFile(
+      import.meta.env.VITE_NOTES_IMG_BUCKET_ID,
+      "unique()",
+      file
+    );
+
+    const imageUrl =
+      import.meta.env.VITE_PROJECT_ENDPOINT +
+      `/storage/buckets/${import.meta.env.VITE_NOTES_IMG_BUCKET_ID}/files/${
+        response.$id
+      }/view?project=${import.meta.env.VITE_PROJECT_ID}`;
+    return imageUrl;
+  } catch (error) {
+    const err = commonErrorHandling(error);
+    toast.error(err.message);
+    return "/ERROR.jpg";
   }
 }

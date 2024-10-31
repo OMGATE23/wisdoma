@@ -19,7 +19,7 @@ import FolderIcon from "../../icons/FolderIcon";
 import DocumentIcon from "../../icons/DocumentIcon";
 
 interface Props {
-  collection: NotesAndFolder; // Adjust type as needed based on the structure of `data`
+  collection: NotesAndFolder;
 }
 
 export default function RadialTidyTree(props: Props) {
@@ -134,7 +134,6 @@ export default function RadialTidyTree(props: Props) {
     const data = getTidyTreeDataFromCollection(props.collection);
     if (!data) return;
 
-    // Clear previous content
     d3.select(svgRef.current).selectAll("*").remove();
     const width = window.innerWidth * 0.8;
     const height = width * 0.5;
@@ -142,20 +141,17 @@ export default function RadialTidyTree(props: Props) {
     const cy = height * 0.25;
     const radius = Math.min(width, height) / 1.75 - 30;
 
-    // Set up the radial tree layout
     const tree = d3
       .tree<TidyTreeData>()
       .size([2 * Math.PI, radius])
       .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
-    // Sort and layout the tree data
     const root = tree(
       d3
         .hierarchy(data)
         .sort((a, b) => d3.ascending(a.data.data.title, b.data.data.title))
     );
 
-    // Create the SVG element
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
@@ -165,7 +161,6 @@ export default function RadialTidyTree(props: Props) {
       .style("height", "auto")
       .style("font", "10px sans-serif");
 
-    // Append links between nodes
     svg
       .append("g")
       .attr("fill", "none")
@@ -191,7 +186,6 @@ export default function RadialTidyTree(props: Props) {
         }
       });
 
-    // Append nodes as circles
     svg
       .append("g")
       .selectAll("circle")
@@ -204,7 +198,6 @@ export default function RadialTidyTree(props: Props) {
       .attr("fill", (d) => (d.data.data.type === "folder" ? "#555" : "#999"))
       .attr("r", (d) => (d.data.data.type === "folder" ? 3 : 2.5));
 
-    // Append labels
     svg
       .append("g")
       .attr("stroke-linejoin", "round")

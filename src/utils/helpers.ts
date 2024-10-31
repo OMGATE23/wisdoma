@@ -85,7 +85,6 @@ export function formatCreatedAt(createdAt: string): string {
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
 
-  // Determine the suffix for the day
   const suffix =
     day % 10 === 1 && day !== 11
       ? "st"

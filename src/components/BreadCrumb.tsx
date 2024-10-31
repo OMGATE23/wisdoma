@@ -24,8 +24,6 @@ export default function BreadCrumb(props: Props) {
       let currentNode = props.currentNode;
 
       while (currentNode.parent_id !== null) {
-        console.log(currentNode);
-
         const parentFolder = folders.find(
           (fol) => fol.$id === currentNode.parent_id
         );
@@ -56,7 +54,7 @@ export default function BreadCrumb(props: Props) {
     loadFolders();
   }, [user, props.currentNode]);
   return (
-    <div className="breadcrumb flex space-x-2 text-neutral-700">
+    <div className="breadcrumb flex space-x-2 text-neutral-700 mx-auto w-[80%] overflow-hidden justify-center md:justify-normal">
       {breadCrumbPath.map((folder, index) => (
         <span key={folder.$id} className="">
           <Link className="hover:text-black" to={`/folder/${folder.$id}`}>

@@ -47,7 +47,7 @@ export default function FolderContent(props: Props) {
           )}
         </div>
         <div className="text-left">
-          <p>{props.content.title}</p>
+          <p className="truncate max-w-[150px] md:max-w-full">{props.content.title}</p>
           <p className="text-[0.75rem] text-neutral-700">
             Created on: {formatCreatedAt(props.content.$updatedAt)}
           </p>

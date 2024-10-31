@@ -69,13 +69,10 @@ export default function Notes() {
   const updateTitle = async () => {
     try {
       if (!note) return;
-      setLoading(true);
       await updateNoteTitle(note.$id, title);
     } catch (err) {
       const error = commonErrorHandling(err);
       toast.error(error.message);
-    } finally {
-      setLoading(false);
     }
   };
   return (
@@ -86,7 +83,7 @@ export default function Notes() {
         {note && !loading && (
           <div className="p-4 w-full">
             <BreadCrumb currentNode={note} />
-            <div className=" flex flex-col items-center mx-auto mt-4 w-[80%]">
+            <div className=" flex flex-col items-center mx-auto mt-4 w-[95%] md:w-[80%]">
               <textarea
                 placeholder="Untitled"
                 defaultValue={title}
@@ -95,12 +92,21 @@ export default function Notes() {
                   e.target.style.height = "auto";
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
+                onFocus={(e) => {
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
                 onBlur={() => {
                   updateTitle();
                 }}
-                style={{ height: "auto" }}
-                className="text-5xl font-bold resize-none p-4 w-full ml-16 outline-none"
+                maxLength={50}
+                style={{
+                  overflow: "hidden",
+                  resize: "none",
+                }}
+                className="text-3xl md:text-5xl h-[9rem] md:h-auto font-bold p-4 w-full md:ml-16 outline-none"
               />
+
               <NoteEditor
                 note={note}
                 editable={note.user_id === user?.id}

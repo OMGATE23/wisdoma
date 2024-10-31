@@ -51,9 +51,10 @@ export default function Dashboard() {
       setNotesAndFolder(filesAndFolders.data);
       setLoading(false);
     } catch (err) {
-      console.log(err);
       const error = commonErrorHandling(err);
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 

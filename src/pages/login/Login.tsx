@@ -23,8 +23,8 @@ export default function Login() {
     return <></>;
   }
   return (
-    <div className=" h-[70vh] flex justify-center items-center">
-      <div className="flex flex-col items-center gap-4 w-96 h-[60%] p-4 rounded outline outline-neutral-200">
+    <div className="h-[90vh] md:h-[70vh] flex justify-center items-center">
+      <div className="flex flex-col items-center gap-4 w-80 md:w-96 md:h-[60%] p-4 rounded outline outline-neutral-200">
         <div className="text-center mb-2">
           <h1 className="text-3xl font-[600] font-lora mb-1">Login</h1>
           <p className="font-lora text-neutral-700">

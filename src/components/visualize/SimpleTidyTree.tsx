@@ -138,7 +138,7 @@ export default function SimpleTidyTree(props: Props) {
 
     const data = getTidyTreeDataFromCollection(props.collection);
 
-    const width = window.innerWidth * 0.7;
+    const width = window.innerWidth * 0.8;
 
     const root = d3.hierarchy(data);
     const dx = 20;
@@ -248,7 +248,6 @@ export default function SimpleTidyTree(props: Props) {
       {hoverInfo && currentNode && (
         <div
           onMouseLeave={() => {
-            console.log("mouse it out");
             setHoverInfo(null);
             setCurrentNode(null);
             setFocusedNodes(null);

@@ -59,14 +59,14 @@ export default function Graphe(props: Props) {
       ...props.collection.folders.map((folder) => ({
         id: folder.$id,
         title: folder.title,
-        group: 1, // Folder group
+        group: 1,
         type: folder.type,
         is_root: folder.is_root,
       })),
       ...props.collection.files.map((file) => ({
         id: file.$id,
         title: file.title,
-        group: 2, // File group
+        group: 2,
         type: file.type,
       })),
     ];
@@ -80,7 +80,6 @@ export default function Graphe(props: Props) {
         .filter((folder) => folder.parent_id)
         .map((folder) => ({ source: folder.parent_id!, target: folder.$id })),
 
-      // Link between items in destination_ids and source_id
       ...props.connections.flatMap((connection) =>
         connection.destination_ids
           .filter(
@@ -96,7 +95,7 @@ export default function Graphe(props: Props) {
       ),
     ];
 
-    const width = 928;
+    const width = window.innerWidth * 0.8;
     const height = 600;
 
     const linksCopy = links.map((d) => ({ ...d }));
@@ -152,7 +151,7 @@ export default function Graphe(props: Props) {
       .append("g")
       .attr("stroke", "#fff")
       .attr("stroke-width", 1.5)
-      .selectAll<SVGCircleElement, Node>("circle") // Specify correct types here
+      .selectAll<SVGCircleElement, Node>("circle")
       .data(nodesCopy)
       .join("circle")
       .attr("r", (d) => (d.type === "folder" ? 10 : 6))

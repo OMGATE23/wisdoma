@@ -4,6 +4,7 @@ import { account } from "../utils/appwrite";
 import { createRootFolder } from "../utils/db";
 import { defaultRootFolder } from "../utils/constants";
 import { toast } from "sonner";
+import { commonErrorHandling } from "../utils/helpers";
 
 interface UserContextProps {
   user: User | null;
@@ -42,10 +43,9 @@ export const AuthContextProvider = ({
       });
       return { error: false, data: null };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        return { error: true, message: error.message };
-      }
-      return { error: true, message: "unknown error occured" };
+      const err = commonErrorHandling(error);
+      toast.error(err.message);
+      return err;
     }
   };
 
@@ -56,17 +56,25 @@ export const AuthContextProvider = ({
   ): Promise<PromiseResponse<null>> => {
     try {
       const user = await account.create("unique()", email, password, name);
-
+      const root_folder = await createRootFolder({
+        ...defaultRootFolder,
+        user_id: user.$id,
+      });
+      console.log(">>> root folder");
+      if (root_folder.error) {
+        toast.error(root_folder.message);
+        return {
+          error: true,
+          message: root_folder.message,
+        };
+      }
       await login(email, password);
-
-      await createRootFolder({ ...defaultRootFolder, user_id: user.$id });
 
       return { error: false, data: null };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        return { error: true, message: error.message };
-      }
-      return { error: true, message: "unknown error occured" };
+      const err = commonErrorHandling(error);
+      toast.error(err.message);
+      return err;
     }
   };
 
@@ -74,12 +82,12 @@ export const AuthContextProvider = ({
     try {
       await account.deleteSession("current");
       setUser(null);
+      console.log('>>> loggin out')
       return { error: false, data: null };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        return { error: true, message: error.message };
-      }
-      return { error: true, message: "unknown error occured" };
+      const err = commonErrorHandling(error);
+      toast.error(err.message);
+      return err;
     }
   };
 
@@ -93,7 +101,7 @@ export const AuthContextProvider = ({
           email: currentUser.email,
         });
       } catch {
-        toast.error("Couldn't load user, try again later")
+        toast.error("Couldn't load user, try again later");
         setUser(null);
       } finally {
         setLoading(false);

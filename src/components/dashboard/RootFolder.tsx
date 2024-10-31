@@ -156,7 +156,7 @@ export default function RootFolder(props: Props) {
       </div>
       ) : (
         <>
-          <div className="flex flex-col gap-2 mb-4">
+          <div className="flex flex-col gap-2 mb-4 ml-4">
             {props.rootFolder.parent_id && (
               <BreadCrumb currentNode={props.rootFolder} />
             )}
@@ -168,10 +168,10 @@ export default function RootFolder(props: Props) {
           </div>
           {props.collection.folders.length === 0 ? (
             <div className="flex flex-col gap-4 h-[50%] justify-center items-center">
-              <p className="text-3xl font-[600] text-neutral-800 ">
+              <p className="text-3xl font-[600] text-neutral-800 text-center ">
                 Create notes and folders now!
               </p>
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4">
                 <button
                   className="flex items-center gap-2 bg-neutral-800 py-1.5 px-4 rounded-md text-white shadow"
                   onClick={() => setNoteModalOpen(true)}
@@ -192,14 +192,14 @@ export default function RootFolder(props: Props) {
             <>
               <div className="flex items-center gap-4">
                 <button
-                  className="flex items-center gap-2 bg-neutral-800 py-1.5 px-4 rounded-md text-white shadow"
+                  className="flex items-center gap-2 text-sm md:text-base bg-neutral-800 py-1.5 px-4 rounded-md text-white shadow"
                   onClick={() => setNoteModalOpen(true)}
                 >
                   <DocumentIcon size={16} strokeWidth={1} />
                   Create Note
                 </button>
                 <button
-                  className="flex items-center gap-2 bg-neutral-100 py-1.5 px-4 rounded-md text-neutral-900 shadow-sm"
+                  className="flex items-center gap-2 text-sm md:text-base bg-neutral-100 py-1.5 px-4 rounded-md text-neutral-900 shadow-sm"
                   onClick={() => setFolderModalOpen(true)}
                 >
                   <FolderIcon size={16} strokeWidth={1} />

@@ -39,11 +39,16 @@ export default function Graphe() {
       })),
     ];
 
-    // Create individual stars by linking nodes to their respective hubs
     const links: Link[] = [
-      ...nodes.slice(1, 13).map((node) => ({ source: "Hub 1", target: node.id })),
-      ...nodes.slice(13, 25).map((node) => ({ source: "Hub 2", target: node.id })),
-      ...nodes.slice(25, 37).map((node) => ({ source: "Hub 3", target: node.id })),
+      ...nodes
+        .slice(1, 13)
+        .map((node) => ({ source: "Hub 1", target: node.id })),
+      ...nodes
+        .slice(13, 25)
+        .map((node) => ({ source: "Hub 2", target: node.id })),
+      ...nodes
+        .slice(25, 37)
+        .map((node) => ({ source: "Hub 3", target: node.id })),
     ];
 
     const width = 720;
@@ -93,7 +98,10 @@ export default function Graphe() {
       .forceSimulation<Node>(nodesCopy)
       .force(
         "link",
-        d3.forceLink<Node, Link>(linksCopy).id((d: Node) => d.id).distance(150) 
+        d3
+          .forceLink<Node, Link>(linksCopy)
+          .id((d: Node) => d.id)
+          .distance(150)
       )
       .force("charge", d3.forceManyBody())
       .force("x", d3.forceX())
@@ -137,5 +145,10 @@ export default function Graphe() {
     };
   }, []);
 
-  return <svg ref={svgRef}></svg>;
+  return (
+    <svg
+      className="outline outline-1 rounded outline-neutral-200"
+      ref={svgRef}
+    ></svg>
+  );
 }
