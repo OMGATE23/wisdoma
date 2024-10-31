@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { useAuthContext } from "../../utils/hooks";
-import { Link, redirect } from "react-router-dom";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { useAuthContext } from '../../utils/hooks';
+import { Link, redirect } from 'react-router-dom';
+import { toast } from 'sonner';
 
 function SignUp() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { signup, loading } = useAuthContext();
 
   async function signUpUser() {
     const resp = await signup(email, password, name);
-    redirect("/folder");
+    redirect('/folder');
     if (resp.error) {
       toast.error(resp.message);
     }
@@ -38,20 +38,20 @@ function SignUp() {
             className="w-full py-2 px-4 rounded outline outline-1 outline-neutral-200"
             value={email}
             placeholder="email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             type="email"
           />
           <input
             className="w-full py-2 px-4 rounded outline outline-1 outline-neutral-200"
             value={name}
             placeholder="name"
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
           />
           <input
             className="w-full py-2 px-4 rounded outline outline-1 outline-neutral-200"
             value={password}
             placeholder="password"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             type="password"
           />
 
@@ -62,7 +62,7 @@ function SignUp() {
             Sign up
           </button>
           <p className="font-lora text-neutral-600 text-sm">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link className="font-lora text-black" to="/login">
               Login
             </Link>

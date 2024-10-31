@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { useAuthContext } from "../../utils/hooks";
-import { toast } from "sonner";
-import { Link, redirect } from "react-router-dom";
+import { useState } from 'react';
+import { useAuthContext } from '../../utils/hooks';
+import { toast } from 'sonner';
+import { Link, redirect } from 'react-router-dom';
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, loading: userLoading } = useAuthContext();
   async function logInUser() {
@@ -14,7 +14,7 @@ export default function Login() {
     if (resp.error) {
       toast.error(resp.message);
     } else {
-      redirect("/folder");
+      redirect('/folder');
     }
     setLoading(false);
   }
@@ -35,14 +35,14 @@ export default function Login() {
           className="w-full py-2 px-4 rounded outline outline-1 outline-neutral-200"
           value={email}
           placeholder="email"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           type="email"
         />
         <input
           className="w-full py-2 px-4 rounded outline outline-1 outline-neutral-200"
           value={password}
           placeholder="password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           type="password"
         />
 
@@ -54,7 +54,7 @@ export default function Login() {
           Login
         </button>
         <p className="font-lora text-neutral-600 text-sm">
-          Don't have an account?{" "}
+          Don't have an account?{' '}
           <Link className="font-lora text-black" to="/signup">
             Sign up
           </Link>

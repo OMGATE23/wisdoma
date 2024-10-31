@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { PromiseResponse } from "../types";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { PromiseResponse } from '../types';
+import { toast } from 'sonner';
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,7 +14,7 @@ interface ModalProps {
 
 const InputModal = (props: ModalProps) => {
   const [inputValue, setInputValue] = useState<string>(
-    props.defaultValue ? props.defaultValue : ""
+    props.defaultValue ? props.defaultValue : '',
   );
   const [error, setError] = useState<string | null>(null);
   const handleSubmit = async () => {
@@ -25,10 +25,10 @@ const InputModal = (props: ModalProps) => {
       if (resp.error) {
         setError(resp.message);
       } else {
-        setInputValue("");
+        setInputValue('');
         props.onClose();
         toast.success(
-          props.successMessage ? props.successMessage : "Created Successfully"
+          props.successMessage ? props.successMessage : 'Created Successfully',
         );
       }
     }
@@ -43,7 +43,7 @@ const InputModal = (props: ModalProps) => {
         <input
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={e => setInputValue(e.target.value)}
           placeholder={props.placeholder || `Enter ${props.title}`}
           className="w-full p-2 outline outline-1 outline-neutral-400 rounded"
         />
@@ -58,7 +58,7 @@ const InputModal = (props: ModalProps) => {
           <button
             className="px-4 py-2 bg-neutral-900 text-white rounded disabled:cursor-not-allowed"
             onClick={handleSubmit}
-            disabled={inputValue.trim() === ""}
+            disabled={inputValue.trim() === ''}
           >
             Submit
           </button>

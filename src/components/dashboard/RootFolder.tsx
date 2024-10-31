@@ -1,6 +1,6 @@
-import { NotesAndFolder, PromiseResponse, Resp_Folder } from "../../types";
-import DocumentIcon from "../../icons/DocumentIcon";
-import FolderIcon from "../../icons/FolderIcon";
+import { NotesAndFolder, PromiseResponse, Resp_Folder } from '../../types';
+import DocumentIcon from '../../icons/DocumentIcon';
+import FolderIcon from '../../icons/FolderIcon';
 import {
   createNote,
   createFolder,
@@ -8,17 +8,17 @@ import {
   deleteNote,
   deleteFolder,
   updateFolderTitle,
-} from "../../utils/db";
+} from '../../utils/db';
 import {
   commonErrorHandling,
   getCurrentDateISOString,
-} from "../../utils/helpers";
-import { useAuthContext } from "../../utils/hooks";
-import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
-import InputModal from "../InputModal";
-import FolderContent from "./FolderContent";
-import BreadCrumb from "../BreadCrumb";
+} from '../../utils/helpers';
+import { useAuthContext } from '../../utils/hooks';
+import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import InputModal from '../InputModal';
+import FolderContent from './FolderContent';
+import BreadCrumb from '../BreadCrumb';
 
 interface Props {
   collection: NotesAndFolder;
@@ -33,12 +33,12 @@ export default function RootFolder(props: Props) {
   const [isNoteModalOpen, setNoteModalOpen] = useState(false);
 
   async function createNoteInRoot(
-    title: string
+    title: string,
   ): Promise<PromiseResponse<null>> {
     try {
       const resp = await createNote({
         title: title,
-        note_content: "",
+        note_content: '',
         parent_id: props.rootFolder!.$id,
         created_at: getCurrentDateISOString(),
         updated_at: getCurrentDateISOString(),
@@ -63,14 +63,14 @@ export default function RootFolder(props: Props) {
   }
 
   async function createFolderInRoot(
-    title: string
+    title: string,
   ): Promise<PromiseResponse<null>> {
     try {
       const resp = await createFolder(
         user!.id,
         props.rootFolder!.$id,
         title,
-        props.rootFolder!.title
+        props.rootFolder!.title,
       );
 
       if (resp.error) {
@@ -87,7 +87,7 @@ export default function RootFolder(props: Props) {
 
   async function handleRenameNote(
     noteId: string,
-    val: string
+    val: string,
   ): Promise<PromiseResponse<null>> {
     try {
       const resp = await updateNoteTitle(noteId, val);
@@ -103,7 +103,7 @@ export default function RootFolder(props: Props) {
 
   async function handleRenameFolder(
     folderId: string,
-    val: string
+    val: string,
   ): Promise<PromiseResponse<null>> {
     try {
       const resp = await updateFolderTitle(folderId, val);
@@ -118,7 +118,7 @@ export default function RootFolder(props: Props) {
   }
 
   async function handleDeleteNote(
-    noteId: string
+    noteId: string,
   ): Promise<PromiseResponse<null>> {
     try {
       const resp = await deleteNote(noteId);
@@ -133,7 +133,7 @@ export default function RootFolder(props: Props) {
   }
 
   async function handleDeleteFolder(
-    noteId: string
+    noteId: string,
   ): Promise<PromiseResponse<null>> {
     try {
       const resp = await deleteFolder(noteId);
@@ -141,7 +141,6 @@ export default function RootFolder(props: Props) {
       if (resp.error) return resp;
 
       props.resetRootAndCollection();
-
       return { error: false, data: null };
     } catch (error) {
       return commonErrorHandling(error);
@@ -152,21 +151,22 @@ export default function RootFolder(props: Props) {
     <div className="bg-white flex-col gap-4 h-full w-full rounded-md p-4 mr-8">
       {props.loading || props.rootFolder === null ? (
         <div className="font-lora flex justify-center items-center h-[100vh]">
-        Good things come to those who wait...
-      </div>
+          Good things come to those who wait...
+        </div>
       ) : (
         <>
-          <div className="flex flex-col gap-2 mb-4 ml-4">
+          <div className="flex flex-col gap-2 mb-4 ml-4 md:ml-0">
             {props.rootFolder.parent_id && (
               <BreadCrumb currentNode={props.rootFolder} />
             )}
             <p className="text-2xl font-[600]">
               {props.rootFolder.is_root
-                ? "Your Workspace"
+                ? 'Your Workspace'
                 : props.rootFolder.title}
             </p>
           </div>
-          {props.collection.folders.length === 0 ? (
+          {props.collection.folders.length === 0 &&
+          props.collection.files.length === 0 ? (
             <div className="flex flex-col gap-4 h-[50%] justify-center items-center">
               <p className="text-3xl font-[600] text-neutral-800 text-center ">
                 Create notes and folders now!
@@ -207,7 +207,7 @@ export default function RootFolder(props: Props) {
                 </button>
               </div>
               <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mr-8">
-                {props.collection.files.map((file) => (
+                {props.collection.files.map(file => (
                   <React.Fragment key={file.$id}>
                     <FolderContent
                       content={file}
@@ -217,7 +217,7 @@ export default function RootFolder(props: Props) {
                   </React.Fragment>
                 ))}
 
-                {props.collection.folders.map((folder) => (
+                {props.collection.folders.map(folder => (
                   <React.Fragment key={folder.$id}>
                     <FolderContent
                       content={folder}

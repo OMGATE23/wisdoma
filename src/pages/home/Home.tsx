@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import ArrowRightIcon from "../../icons/ArrowRightIcon";
+import { Link } from 'react-router-dom';
+import ArrowRightIcon from '../../icons/ArrowRightIcon';
 
 export default function Home() {
   return (
@@ -22,7 +22,7 @@ export default function Home() {
         <div className="min-h-[60vh] w=[80%] md:w-[50%] flex flex-col justify-center items-center text-center">
           <h1 className="font-lora text-6xl font-[600]">Wisdoma</h1>
           <h2 className="font-lora text-xl font-[600] text-neutral-700">
-            The best note taking app of{" "}
+            The best note taking app of{' '}
             <span className="text-neutral-900 font-lora">21st century</span>
           </h2>
           <h3 className="text-neutral-500 font-lora mt-4">

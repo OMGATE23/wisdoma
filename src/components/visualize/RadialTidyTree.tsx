@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
+import { useEffect, useRef, useState } from 'react';
+import * as d3 from 'd3';
 import {
   NotesAndFolder,
   PromiseResponse,
   Resp_Folder,
   Resp_Note,
   TidyTreeData,
-} from "../../types";
+} from '../../types';
 import {
   commonErrorHandling,
   getCurrentDateISOString,
   getTidyTreeDataFromCollection,
-} from "../../utils/helpers";
-import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../utils/hooks";
-import { createFolder, createNote } from "../../utils/db";
-import FolderIcon from "../../icons/FolderIcon";
-import DocumentIcon from "../../icons/DocumentIcon";
+} from '../../utils/helpers';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../utils/hooks';
+import { createFolder, createNote } from '../../utils/db';
+import FolderIcon from '../../icons/FolderIcon';
+import DocumentIcon from '../../icons/DocumentIcon';
 
 interface Props {
   collection: NotesAndFolder;
@@ -26,29 +26,29 @@ export default function RadialTidyTree(props: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const navigate = useNavigate();
   const [hoverInfo, setHoverInfo] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [currentNode, setCurrentNode] = useState<
     Resp_Folder | Resp_Note | null
   >(null);
   const [focusedNodes, setFocusedNodes] = useState<string[] | null>(null);
-  const [createType, setCreateType] = useState<"file" | "folder" | null>(null);
-  const [inputText, setInputText] = useState("");
+  const [createType, setCreateType] = useState<'file' | 'folder' | null>(null);
+  const [inputText, setInputText] = useState('');
   const { user } = useAuthContext();
   async function createNoteForCurrentFolder(
-    title: string
+    title: string,
   ): Promise<PromiseResponse<null>> {
     try {
-      if (!currentNode || currentNode.type !== "folder") {
+      if (!currentNode || currentNode.type !== 'folder') {
         return {
           error: true,
-          message: "Cannot create note here" + "->" + currentNode?.type,
+          message: 'Cannot create note here' + '->' + currentNode?.type,
         };
       }
 
       const resp = await createNote({
         title: title,
-        note_content: "",
+        note_content: '',
         parent_id: currentNode.$id,
         created_at: getCurrentDateISOString(),
         updated_at: getCurrentDateISOString(),
@@ -73,13 +73,13 @@ export default function RadialTidyTree(props: Props) {
   }
 
   async function createFolderCurrentFolder(
-    title: string
+    title: string,
   ): Promise<PromiseResponse<null>> {
     try {
-      if (!currentNode || currentNode.type !== "folder") {
+      if (!currentNode || currentNode.type !== 'folder') {
         return {
           error: true,
-          message: "Cannot create note here" + "->" + currentNode?.type,
+          message: 'Cannot create note here' + '->' + currentNode?.type,
         };
       }
 
@@ -87,7 +87,7 @@ export default function RadialTidyTree(props: Props) {
         user!.id,
         currentNode.$id,
         title,
-        currentNode.title
+        currentNode.title,
       );
 
       if (resp.error) {
@@ -106,11 +106,11 @@ export default function RadialTidyTree(props: Props) {
     $id: string;
     is_root?: boolean;
   }) => {
-    if (node.type === "file") {
+    if (node.type === 'file') {
       navigate(`/note/${node.$id}`);
-    } else if (node.type === "folder") {
+    } else if (node.type === 'folder') {
       if (node.is_root) {
-        navigate("/folder");
+        navigate('/folder');
       } else {
         navigate(`/folder/${node.$id}`);
       }
@@ -123,9 +123,7 @@ export default function RadialTidyTree(props: Props) {
 
     while (curr.parent_id !== null) {
       nodesInHierarchy.push(curr.parent_id);
-      curr = props.collection.folders.find(
-        (fol) => fol.$id === curr.parent_id
-      )!;
+      curr = props.collection.folders.find(fol => fol.$id === curr.parent_id)!;
     }
     setFocusedNodes(nodesInHierarchy);
   }
@@ -134,12 +132,12 @@ export default function RadialTidyTree(props: Props) {
     const data = getTidyTreeDataFromCollection(props.collection);
     if (!data) return;
 
-    d3.select(svgRef.current).selectAll("*").remove();
+    d3.select(svgRef.current).selectAll('*').remove();
     const width = window.innerWidth * 0.8;
     const height = width * 0.5;
     const cx = width * 0.5;
-    const cy = height * 0.25;
-    const radius = Math.min(width, height) / 1.75 - 30;
+    const cy = height * 0.5;
+    const radius = Math.min(width, height) / 4 - 30;
 
     const tree = d3
       .tree<TidyTreeData>()
@@ -149,89 +147,89 @@ export default function RadialTidyTree(props: Props) {
     const root = tree(
       d3
         .hierarchy(data)
-        .sort((a, b) => d3.ascending(a.data.data.title, b.data.data.title))
+        .sort((a, b) => d3.ascending(a.data.data.title, b.data.data.title)),
     );
 
     const svg = d3
       .select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", [-cx, -cy, width, height])
-      .style("width", "100%")
-      .style("height", "auto")
-      .style("font", "10px sans-serif");
+      .attr('width', width)
+      .attr('height', height)
+      .attr('viewBox', [-cx, -cy, width, height])
+      .style('width', '100%')
+      .style('height', 'auto')
+      .style('font', '10px sans-serif');
 
     svg
-      .append("g")
-      .attr("fill", "none")
-      .attr("stroke-opacity", 0.4)
-      .attr("stroke-width", 1.5)
-      .selectAll("path")
+      .append('g')
+      .attr('fill', 'none')
+      .attr('stroke-opacity', 0.4)
+      .attr('stroke-width', 1.5)
+      .selectAll('path')
       .data(root.links())
-      .join("path")
+      .join('path')
       .attr(
-        "d",
+        'd',
         d3
           .linkRadial<any, any>()
-          .angle((d) => d.x)
-          .radius((d) => d.y)
+          .angle(d => d.x)
+          .radius(d => d.y),
       )
-      .attr("stroke", (d) => {
-        if (focusedNodes === null) return "rgba(0,0,0,0.9)";
+      .attr('stroke', d => {
+        if (focusedNodes === null) return 'rgba(0,0,0,0.9)';
 
         if (focusedNodes.includes(d.target.data.data.$id)) {
-          return "black";
+          return 'black';
         } else {
-          return "rgba(0,0,0,0.1)";
+          return 'rgba(0,0,0,0.1)';
         }
       });
 
     svg
-      .append("g")
-      .selectAll("circle")
+      .append('g')
+      .selectAll('circle')
       .data(root.descendants())
-      .join("circle")
+      .join('circle')
       .attr(
-        "transform",
-        (d) => `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y},0)`
+        'transform',
+        d => `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y},0)`,
       )
-      .attr("fill", (d) => (d.data.data.type === "folder" ? "#555" : "#999"))
-      .attr("r", (d) => (d.data.data.type === "folder" ? 3 : 2.5));
+      .attr('fill', d => (d.data.data.type === 'folder' ? '#555' : '#999'))
+      .attr('r', d => (d.data.data.type === 'folder' ? 3 : 2.5));
 
     svg
-      .append("g")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-width", 3)
-      .selectAll("text")
+      .append('g')
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-width', 3)
+      .selectAll('text')
       .data(root.descendants())
-      .join("text")
+      .join('text')
       .attr(
-        "transform",
-        (d) => `
+        'transform',
+        d => `
         rotate(${(d.x * 180) / Math.PI - 90}) 
         translate(${d.y},0) 
         rotate(${d.x >= Math.PI ? 180 : 0})
-      `
+      `,
       )
-      .attr("dy", "0.31em")
-      .attr("x", (d) => (d.x < Math.PI === !d.children ? 6 : -6))
-      .attr("text-anchor", (d) =>
-        d.x < Math.PI === !d.children ? "start" : "end"
+      .attr('dy', '0.31em')
+      .attr('x', d => (d.x < Math.PI === !d.children ? 6 : -6))
+      .attr('text-anchor', d =>
+        d.x < Math.PI === !d.children ? 'start' : 'end',
       )
-      .attr("paint-order", "stroke")
-      .attr("stroke", "white")
-      .attr("fill", "currentColor")
-      .attr("font-size", "0.5rem")
-      .text((d) =>
-        d.data.data.parent_id !== null ? d.data.data.title : "Your Workspace"
+      .attr('paint-order', 'stroke')
+      .attr('stroke', 'white')
+      .attr('fill', 'currentColor')
+      .attr('font-size', '0.5rem')
+      .text(d =>
+        d.data.data.parent_id !== null ? d.data.data.title : 'Your Workspace',
       )
-      .attr("fill", (d) => {
-        if (focusedNodes === null) return "black";
+      .attr('fill', d => {
+        if (focusedNodes === null) return 'black';
         return focusedNodes.includes(d.data.data.$id)
-          ? "black"
-          : "rgba(0,0,0,0.2)";
+          ? 'black'
+          : 'rgba(0,0,0,0.2)';
       })
-      .on("mouseover", (e: MouseEvent, d) => {
+      .on('mouseover', (e: MouseEvent, d) => {
         if (hoverInfo) return;
         setHoverInfo({
           x: e.clientX,
@@ -240,7 +238,7 @@ export default function RadialTidyTree(props: Props) {
         setCurrentNode(d.data.data);
         filterFocusedNodes(d.data.data);
       })
-      .on("click", (_, d) => handleClickNode(d.data.data));
+      .on('click', (_, d) => handleClickNode(d.data.data));
   }, [props.collection, focusedNodes]);
 
   return (
@@ -259,8 +257,8 @@ export default function RadialTidyTree(props: Props) {
           }}
           className="w-[300px] h-[150px] flex justify-center items-center absolute"
           style={{
-            top: hoverInfo.y - 30 + "px",
-            left: hoverInfo.x - 120 + "px",
+            top: hoverInfo.y - 30 + 'px',
+            left: hoverInfo.x - 120 + 'px',
           }}
         >
           <div className="outline outline-1 outline-neutral-300 shadow rounded-md p-4 bg-white">
@@ -270,34 +268,34 @@ export default function RadialTidyTree(props: Props) {
                   type: currentNode.type,
                   $id: currentNode.$id,
                   is_root:
-                    currentNode.type === "folder" ? currentNode.is_root : false,
+                    currentNode.type === 'folder' ? currentNode.is_root : false,
                 })
               }
               className="py-2 px-4 cursor-pointer w-full rounded flex items-center gap-2 outline outline-1 outline-neutral-300"
             >
               <div className="outline outline-1 outline-neutral-200 rounded shadow p-1 flex item">
-                {currentNode.type === "folder" ? (
+                {currentNode.type === 'folder' ? (
                   <FolderIcon size={20} />
                 ) : (
                   <DocumentIcon size={20} />
                 )}
               </div>
-              {currentNode.parent_id ? currentNode.title : "Your Workspace"}
+              {currentNode.parent_id ? currentNode.title : 'Your Workspace'}
             </div>
 
-            {currentNode.type === "folder" && (
+            {currentNode.type === 'folder' && (
               <div>
                 {createType === null && (
                   <div className="flex justify-center items-center gap-2 py-2">
                     <button
                       className="font-[300] text-sm py-1 px-2 rounded text-white bg-neutral-900"
-                      onClick={() => setCreateType("folder")}
+                      onClick={() => setCreateType('folder')}
                     >
                       Create Folder
                     </button>
                     <button
                       className="font-[300] text-sm py-1 px-2 rounded text-black bg-neutral-100"
-                      onClick={() => setCreateType("file")}
+                      onClick={() => setCreateType('file')}
                     >
                       Create File
                     </button>
@@ -308,7 +306,7 @@ export default function RadialTidyTree(props: Props) {
                   <div className="w-full flex flex-col justify-center py-2 gap-2">
                     <input
                       value={inputText}
-                      onChange={(e) => {
+                      onChange={e => {
                         setInputText(e.target.value);
                       }}
                       className="py-1 px-2 rounded outline outline-1 outline-neutral-200"
@@ -316,7 +314,7 @@ export default function RadialTidyTree(props: Props) {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => {
-                          if (createType === "file") {
+                          if (createType === 'file') {
                             createNoteForCurrentFolder(inputText);
                           } else {
                             createFolderCurrentFolder(inputText);
@@ -329,7 +327,7 @@ export default function RadialTidyTree(props: Props) {
                       <button
                         className=" py-1 px-2 rounded"
                         onClick={() => {
-                          setInputText("");
+                          setInputText('');
                           setCreateType(null);
                         }}
                       >

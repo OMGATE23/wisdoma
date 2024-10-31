@@ -45,14 +45,14 @@ export interface Resp_Folder extends Folder {
   $updatedAt: string;
   $createdAt: string;
   $id: string;
-  type: "folder";
+  type: 'folder';
 }
 
 export interface Resp_Note extends Note {
   $updatedAt: string;
   $createdAt: string;
   $id: string;
-  type: "file";
+  type: 'file';
 }
 
 export interface DocumentList<T> {

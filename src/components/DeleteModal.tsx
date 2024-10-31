@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { PromiseResponse } from "../types";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { PromiseResponse } from '../types';
+import { toast } from 'sonner';
 
 interface ModalProps {
   isOpen: boolean;

@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { NotesAndFolder, Resp_Note } from "../../types";
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { NotesAndFolder, Resp_Note } from '../../types';
 import {
   getAllNotesAndFolders,
   getNoteById,
   updateNoteTitle,
-} from "../../utils/db";
-import { useAuthContext } from "../../utils/hooks";
-import { commonErrorHandling } from "../../utils/helpers";
-import NoteEditor from "../../components/note/NoteEditor";
-import { toast } from "sonner";
-import Header from "../../components/Header";
-import Sidebar from "../../components/Sidebar";
-import BreadCrumb from "../../components/BreadCrumb";
+} from '../../utils/db';
+import { useAuthContext } from '../../utils/hooks';
+import { commonErrorHandling } from '../../utils/helpers';
+import NoteEditor from '../../components/note/NoteEditor';
+import { toast } from 'sonner';
+import Header from '../../components/Header';
+import Sidebar from '../../components/Sidebar';
+import BreadCrumb from '../../components/BreadCrumb';
 
 export default function Notes() {
   const [note, setNote] = useState<Resp_Note | null>(null);
@@ -21,7 +21,7 @@ export default function Notes() {
     files: [],
     folders: [],
   });
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthContext();
   const navigate = useNavigate();
@@ -31,8 +31,8 @@ export default function Notes() {
       try {
         if (id) {
           setLoading(true);
-          const resp = await getNoteById(id, user?.id || "");
-          const collectionResp = await getAllNotesAndFolders(user?.id || "");
+          const resp = await getNoteById(id, user?.id || '');
+          const collectionResp = await getAllNotesAndFolders(user?.id || '');
           if (resp.error) {
             toast.error(resp.message);
             return;
@@ -59,7 +59,7 @@ export default function Notes() {
   }, [user, id]);
 
   if (!id) {
-    navigate("/folder");
+    navigate('/folder');
   }
 
   if (loading) {
@@ -83,17 +83,17 @@ export default function Notes() {
         {note && !loading && (
           <div className="p-4 w-full">
             <BreadCrumb currentNode={note} />
-            <div className=" flex flex-col items-center mx-auto mt-4 w-[95%] md:w-[80%]">
+            <div className=" flex flex-col items-center mx-auto mt-4 md:w-[80%]">
               <textarea
                 placeholder="Untitled"
                 defaultValue={title}
-                onChange={(e) => {
+                onChange={e => {
                   setTitle(e.target.value);
-                  e.target.style.height = "auto";
+                  e.target.style.height = 'auto';
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
-                onFocus={(e) => {
-                  e.target.style.height = "auto";
+                onFocus={e => {
+                  e.target.style.height = 'auto';
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
                 onBlur={() => {
@@ -101,10 +101,10 @@ export default function Notes() {
                 }}
                 maxLength={50}
                 style={{
-                  overflow: "hidden",
-                  resize: "none",
+                  overflow: 'hidden',
+                  resize: 'none',
                 }}
-                className="text-3xl md:text-5xl h-[9rem] md:h-auto font-bold p-4 w-full md:ml-16 outline-none"
+                className="text-3xl md:text-5xl h-auto font-bold p-4 w-full md:ml-16 outline-none"
               />
 
               <NoteEditor

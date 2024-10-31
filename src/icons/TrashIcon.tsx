@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface Props {
   size?: number;
@@ -10,8 +10,8 @@ interface Props {
 const TrashIcon: React.FC<Props> = ({
   size = 16,
   strokeWidth = 1.5,
-  strokeColor = "currentColor",
-  className = "",
+  strokeColor = 'currentColor',
+  className = '',
 }) => {
   return (
     <svg

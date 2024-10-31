@@ -1,10 +1,10 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { User, PromiseResponse } from "../types";
-import { account } from "../utils/appwrite";
-import { createRootFolder } from "../utils/db";
-import { defaultRootFolder } from "../utils/constants";
-import { toast } from "sonner";
-import { commonErrorHandling } from "../utils/helpers";
+import { createContext, ReactNode, useEffect, useState } from 'react';
+import { User, PromiseResponse } from '../types';
+import { account } from '../utils/appwrite';
+import { createRootFolder } from '../utils/db';
+import { defaultRootFolder } from '../utils/constants';
+import { toast } from 'sonner';
+import { commonErrorHandling } from '../utils/helpers';
 
 interface UserContextProps {
   user: User | null;
@@ -12,7 +12,7 @@ interface UserContextProps {
   signup: (
     email: string,
     password: string,
-    name: string
+    name: string,
   ) => Promise<PromiseResponse<null>>;
   logout: () => Promise<PromiseResponse<null>>;
   loading: boolean;
@@ -30,7 +30,7 @@ export const AuthContextProvider = ({
 
   const login = async (
     email: string,
-    password: string
+    password: string,
   ): Promise<PromiseResponse<null>> => {
     try {
       await account.createEmailPasswordSession(email, password);
@@ -52,15 +52,14 @@ export const AuthContextProvider = ({
   const signup = async (
     email: string,
     password: string,
-    name: string
+    name: string,
   ): Promise<PromiseResponse<null>> => {
     try {
-      const user = await account.create("unique()", email, password, name);
+      const user = await account.create('unique()', email, password, name);
       const root_folder = await createRootFolder({
         ...defaultRootFolder,
         user_id: user.$id,
       });
-      console.log(">>> root folder");
       if (root_folder.error) {
         toast.error(root_folder.message);
         return {
@@ -80,9 +79,8 @@ export const AuthContextProvider = ({
 
   const logout = async (): Promise<PromiseResponse<null>> => {
     try {
-      await account.deleteSession("current");
+      await account.deleteSession('current');
       setUser(null);
-      console.log('>>> loggin out')
       return { error: false, data: null };
     } catch (error: unknown) {
       const err = commonErrorHandling(error);
@@ -101,7 +99,6 @@ export const AuthContextProvider = ({
           email: currentUser.email,
         });
       } catch {
-        toast.error("Couldn't load user, try again later");
         setUser(null);
       } finally {
         setLoading(false);

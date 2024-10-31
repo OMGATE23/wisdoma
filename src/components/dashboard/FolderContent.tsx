@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom";
-import { PromiseResponse, Resp_Folder, Resp_Note } from "../../types";
-import DocumentIcon from "../../icons/DocumentIcon";
-import FolderIcon from "../../icons/FolderIcon";
-import EditIcon from "../../icons/EditIcon";
-import TrashIcon from "../../icons/TrashIcon";
-import { useState } from "react";
-import InputModal from "../InputModal";
-import DeleteModal from "../DeleteModal";
-import { formatCreatedAt } from "../../utils/helpers";
+import { Link } from 'react-router-dom';
+import { PromiseResponse, Resp_Folder, Resp_Note } from '../../types';
+import DocumentIcon from '../../icons/DocumentIcon';
+import FolderIcon from '../../icons/FolderIcon';
+import EditIcon from '../../icons/EditIcon';
+import TrashIcon from '../../icons/TrashIcon';
+import { useState } from 'react';
+import InputModal from '../InputModal';
+import DeleteModal from '../DeleteModal';
+import { formatCreatedAt } from '../../utils/helpers';
 
 interface Props {
   content: Resp_Note | Resp_Folder;
@@ -33,21 +33,23 @@ export default function FolderContent(props: Props) {
       <Link
         key={props.content.$id}
         to={
-          props.content.type === "file"
+          props.content.type === 'file'
             ? `/note/${props.content.$id}`
             : `/folder/${props.content.$id}`
         }
         className="flex items-center gap-4"
       >
         <div className="bg-neutral-100 p-2 rounded">
-          {props.content.type === "file" ? (
+          {props.content.type === 'file' ? (
             <DocumentIcon strokeWidth={1} size={24} />
           ) : (
             <FolderIcon strokeWidth={1} size={24} />
           )}
         </div>
         <div className="text-left">
-          <p className="truncate max-w-[150px] md:max-w-full">{props.content.title}</p>
+          <p className="truncate max-w-[150px] md:max-w-full">
+            {props.content.title}
+          </p>
           <p className="text-[0.75rem] text-neutral-700">
             Created on: {formatCreatedAt(props.content.$updatedAt)}
           </p>
