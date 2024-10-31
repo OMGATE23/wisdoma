@@ -121,7 +121,7 @@ export default function Graphe(props: Props) {
       ),
     ];
 
-    const width = window.innerWidth * 0.8;
+    const width = window.innerWidth * 0.7;
     const height = 600;
 
     const linksCopy = links.map(d => ({ ...d }));
