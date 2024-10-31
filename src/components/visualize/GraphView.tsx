@@ -2,6 +2,8 @@ import { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import FolderIcon from "../../icons/FolderIcon";
 import DocumentIcon from "../../icons/DocumentIcon";
+import { NotesAndFolder, Resp_Connection } from "../../types";
+import { useNavigate } from "react-router-dom";
 
 interface Node {
   id: string;
@@ -20,23 +22,80 @@ interface Link {
   target: string | Node;
 }
 
-interface ForceGraphProps {
-  nodes: Node[];
-  links: Link[];
-  onClickNode: (node: Node) => void; // Add onClickNode prop here
+interface Props {
+  collection: NotesAndFolder;
+  connections: Resp_Connection[];
 }
 
-export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
+export default function Graphe(props: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [currentNode, setCurrentNode] = useState<Node | null>(null);
   const [hoverInfo, setHoverInfo] = useState<{ x: number; y: number } | null>(
     null
   );
   const [dragging, setDragging] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClickNode = (node: {
+    type: string;
+    id: string;
+    is_root?: boolean;
+  }) => {
+    if (node.type === "file") {
+      navigate(`/note/${node.id}`);
+    } else if (node.type === "folder") {
+      if (node.is_root) {
+        navigate("/folder");
+      } else {
+        navigate(`/folder/${node.id}`);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!svgRef.current) return;
 
-    const width = 928;
+    const nodes: Node[] = [
+      ...props.collection.folders.map((folder) => ({
+        id: folder.$id,
+        title: folder.title,
+        group: 1,
+        type: folder.type,
+        is_root: folder.is_root,
+      })),
+      ...props.collection.files.map((file) => ({
+        id: file.$id,
+        title: file.title,
+        group: 2,
+        type: file.type,
+      })),
+    ];
+
+    const links: Link[] = [
+      ...props.collection.files.map((file) => ({
+        source: file.parent_id,
+        target: file.$id,
+      })),
+      ...props.collection.folders
+        .filter((folder) => folder.parent_id)
+        .map((folder) => ({ source: folder.parent_id!, target: folder.$id })),
+
+      ...props.connections.flatMap((connection) =>
+        connection.destination_ids
+          .filter(
+            (destination_id) =>
+              props.collection.files.find(
+                (note) => note.$id === JSON.parse(destination_id).id
+              ) !== undefined
+          )
+          .map((destination_id) => ({
+            source: connection.source_id,
+            target: JSON.parse(destination_id).id,
+          }))
+      ),
+    ];
+
+    const width = window.innerWidth * 0.8;
     const height = 600;
 
     const linksCopy = links.map((d) => ({ ...d }));
@@ -92,7 +151,7 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
       .append("g")
       .attr("stroke", "#fff")
       .attr("stroke-width", 1.5)
-      .selectAll<SVGCircleElement, Node>("circle") // Specify correct types here
+      .selectAll<SVGCircleElement, Node>("circle")
       .data(nodesCopy)
       .join("circle")
       .attr("r", (d) => (d.type === "folder" ? 10 : 6))
@@ -102,7 +161,7 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
       .call(drag(simulation))
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut)
-      .on("click", (_, d) => onClickNode(d));
+      .on("click", (_, d) => handleClickNode(d));
 
     const titles = svg
       .append("g")
@@ -161,10 +220,10 @@ export default function Graphe({ nodes, links, onClickNode }: ForceGraphProps) {
     return () => {
       simulation.stop();
     };
-  }, [nodes, links]);
+  }, [props.collection, props.connections]);
 
   return (
-    <div className="h-[100vh] flex justify-center items-center">
+    <div className="mt-4 flex justify-center items-center">
       <svg
         className="outline outline-1 outline-neutral-200 rounded-md"
         ref={svgRef}

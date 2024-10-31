@@ -9,12 +9,17 @@ import SignUp from "./pages/signup/SignUp";
 import Notes from "./pages/notes/Notes";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Graph from "./pages/graph/Graph";
+import Login from "./pages/login/Login";
 
 function App() {
   const { user, loading } = useAuthContext();
 
   if (loading) {
-    return <>loading...</>;
+    return (
+      <div className="font-lora flex justify-center items-center h-[100vh]">
+        Good things come to those who wait...
+      </div>
+    );
   }
 
   const router = createBrowserRouter([
@@ -25,6 +30,10 @@ function App() {
     {
       path: "signup",
       element: user ? <Navigate to="/folder" replace /> : <SignUp />,
+    },
+    {
+      path: "login",
+      element: user ? <Navigate to="/folder" replace /> : <Login />,
     },
     {
       path: "folder",
@@ -39,7 +48,7 @@ function App() {
       element: <Notes />,
     },
     {
-      path: "graph",
+      path: "visualize",
       element: user ? <Graph /> : <Navigate to="/signup" replace />,
     },
   ]);

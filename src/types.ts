@@ -86,3 +86,8 @@ export interface NoteFolderPropType {
   id: string;
   title: string;
 }
+
+export interface TidyTreeData {
+  data: Resp_Folder | Resp_Note;
+  children?: TidyTreeData[];
+}

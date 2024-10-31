@@ -1,6 +1,6 @@
 import { NoteFolderPropType, NotesAndFolder, Resp_Note } from "../../types";
 import { debounce } from "../../utils/helpers";
-import { createConnection, saveNoteContent } from "../../utils/db";
+import { createConnection, saveNoteContent, uploadFile } from "../../utils/db";
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
@@ -95,7 +95,7 @@ export default function NoteEditor(props: Props) {
               type: item.type,
             },
           },
-          " ", // add a space after the tag
+          " ",
         ]);
       },
     }));
@@ -107,6 +107,7 @@ export default function NoteEditor(props: Props) {
       initialContent && Array.isArray(JSON.parse(initialContent))
         ? JSON.parse(props.note.note_content)
         : undefined,
+    uploadFile,
   });
   const debouncedSave = debounce(() => {
     const arrayOfPropStrings: NoteFolderPropType[] = [];
@@ -161,14 +162,14 @@ export default function NoteEditor(props: Props) {
     saveNoteContent(props.note.$id, JSON.stringify(editor.document));
   }, 500);
   return (
-    <div>
-      <div className="flex flex-col justify-center items-center gap-8 w-[80vw]">
+    <div className="w-full mt-4 md:mt-0">
+      <div className="">
         <BlockNoteView
           editable={props.editable}
           onChange={() => {
             debouncedSave();
           }}
-          className="w-[80%]"
+          className="w-full"
           editor={editor}
         >
           <SuggestionMenuController

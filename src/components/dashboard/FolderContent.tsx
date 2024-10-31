@@ -7,6 +7,7 @@ import TrashIcon from "../../icons/TrashIcon";
 import { useState } from "react";
 import InputModal from "../InputModal";
 import DeleteModal from "../DeleteModal";
+import { formatCreatedAt } from "../../utils/helpers";
 
 interface Props {
   content: Resp_Note | Resp_Folder;
@@ -25,7 +26,10 @@ export default function FolderContent(props: Props) {
     return props.handleDelete(props.content.$id);
   };
   return (
-    <div className="flex items-center justify-between py-4 px-6 rounded outline outline-1 outline-neutral-200 text-center gap-2 transition-colors duration-200">
+    <div
+      key={props.content.$id}
+      className="flex items-center justify-between p-4 rounded outline outline-1 outline-neutral-200 text-center gap-2 transition-colors duration-200"
+    >
       <Link
         key={props.content.$id}
         to={
@@ -35,12 +39,19 @@ export default function FolderContent(props: Props) {
         }
         className="flex items-center gap-4"
       >
-        {props.content.type === "file" ? (
-          <DocumentIcon strokeWidth={1} size={32} />
-        ) : (
-          <FolderIcon strokeWidth={1} size={32} />
-        )}
-        {props.content.title}
+        <div className="bg-neutral-100 p-2 rounded">
+          {props.content.type === "file" ? (
+            <DocumentIcon strokeWidth={1} size={24} />
+          ) : (
+            <FolderIcon strokeWidth={1} size={24} />
+          )}
+        </div>
+        <div className="text-left">
+          <p className="truncate max-w-[150px] md:max-w-full">{props.content.title}</p>
+          <p className="text-[0.75rem] text-neutral-700">
+            Created on: {formatCreatedAt(props.content.$updatedAt)}
+          </p>
+        </div>
       </Link>
 
       <div className="flex items-center gap-2">

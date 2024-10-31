@@ -1,5 +1,4 @@
 import { NotesAndFolder, PromiseResponse, Resp_Folder } from "../../types";
-import Button from "../Button";
 import DocumentIcon from "../../icons/DocumentIcon";
 import FolderIcon from "../../icons/FolderIcon";
 import {
@@ -8,16 +7,18 @@ import {
   updateNoteTitle,
   deleteNote,
   deleteFolder,
+  updateFolderTitle,
 } from "../../utils/db";
 import {
   commonErrorHandling,
   getCurrentDateISOString,
 } from "../../utils/helpers";
 import { useAuthContext } from "../../utils/hooks";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import InputModal from "../InputModal";
 import FolderContent from "./FolderContent";
+import BreadCrumb from "../BreadCrumb";
 
 interface Props {
   collection: NotesAndFolder;
@@ -52,7 +53,7 @@ export default function RootFolder(props: Props) {
       }
 
       const fileId = resp.data.$id;
-
+      props.resetRootAndCollection();
       navigate(`/note/${fileId}`);
 
       return { error: false, data: null };
@@ -76,7 +77,7 @@ export default function RootFolder(props: Props) {
         return resp;
       }
       const folderId = resp.data.$id;
-
+      props.resetRootAndCollection();
       navigate(`/folder/${folderId}`);
       return { error: false, data: null };
     } catch (error) {
@@ -105,7 +106,7 @@ export default function RootFolder(props: Props) {
     val: string
   ): Promise<PromiseResponse<null>> {
     try {
-      const resp = await updateNoteTitle(folderId, val);
+      const resp = await updateFolderTitle(folderId, val);
 
       if (resp.error) return resp;
 
@@ -148,74 +149,82 @@ export default function RootFolder(props: Props) {
   }
 
   return (
-    <div className="flex bg-white flex-col gap-4 items-center justify-center w-[80%] h-[80vh] outline outline-1 outline-neutral-200 rounded-md p-4 overflow-auto">
+    <div className="bg-white flex-col gap-4 h-full w-full rounded-md p-4 mr-8">
       {props.loading || props.rootFolder === null ? (
-        <p>Loading...</p>
+        <div className="font-lora flex justify-center items-center h-[100vh]">
+        Good things come to those who wait...
+      </div>
       ) : (
         <>
-          {props.rootFolder.parent_id && (
-            <Link to={`/folder/${props.rootFolder.parent_id}`}>Go Back</Link>
-          )}
-          {props.collection.files.length === 0 &&
-          props.collection.folders.length === 0 ? (
-            <>
-              <p className="text-3xl font-[600] text-neutral-800">
+          <div className="flex flex-col gap-2 mb-4 ml-4">
+            {props.rootFolder.parent_id && (
+              <BreadCrumb currentNode={props.rootFolder} />
+            )}
+            <p className="text-2xl font-[600]">
+              {props.rootFolder.is_root
+                ? "Your Workspace"
+                : props.rootFolder.title}
+            </p>
+          </div>
+          {props.collection.folders.length === 0 ? (
+            <div className="flex flex-col gap-4 h-[50%] justify-center items-center">
+              <p className="text-3xl font-[600] text-neutral-800 text-center ">
                 Create notes and folders now!
               </p>
-              <div className="flex items-center justify-between gap-4">
-                <Button
-                  intent="filled"
-                  text="Create Note"
-                  icon={<DocumentIcon />}
-                  bgColor="bg-green-500"
-                  textColor="text-white"
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+                <button
+                  className="flex items-center gap-2 bg-neutral-800 py-1.5 px-4 rounded-md text-white shadow"
                   onClick={() => setNoteModalOpen(true)}
-                />
-                <Button
-                  intent="outline"
-                  text="Create Folder"
-                  icon={<FolderIcon />}
-                  bgColor="bg-blue-500"
-                  textColor="text-white"
+                >
+                  <DocumentIcon size={16} strokeWidth={1} />
+                  Create Note
+                </button>
+                <button
+                  className="flex items-center gap-2 bg-neutral-100 py-1.5 px-4 rounded-md text-neutral-900 shadow-sm"
                   onClick={() => setFolderModalOpen(true)}
-                />
+                >
+                  <FolderIcon size={16} strokeWidth={1} />
+                  Create Folder
+                </button>
               </div>
-            </>
+            </div>
           ) : (
             <>
-              <div className="flex items-center justify-between gap-4">
-                <Button
-                  intent="filled"
-                  text="Create Note"
-                  icon={<DocumentIcon />}
-                  bgColor="bg-green-500"
-                  textColor="text-white"
+              <div className="flex items-center gap-4">
+                <button
+                  className="flex items-center gap-2 text-sm md:text-base bg-neutral-800 py-1.5 px-4 rounded-md text-white shadow"
                   onClick={() => setNoteModalOpen(true)}
-                />
-                <Button
-                  intent="outline"
-                  text="Create Folder"
-                  icon={<FolderIcon />}
-                  bgColor="bg-blue-500"
-                  textColor="text-white"
+                >
+                  <DocumentIcon size={16} strokeWidth={1} />
+                  Create Note
+                </button>
+                <button
+                  className="flex items-center gap-2 text-sm md:text-base bg-neutral-100 py-1.5 px-4 rounded-md text-neutral-900 shadow-sm"
                   onClick={() => setFolderModalOpen(true)}
-                />
+                >
+                  <FolderIcon size={16} strokeWidth={1} />
+                  Create Folder
+                </button>
               </div>
-              <div className="w-full grid grid-cols-2 gap-6">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mr-8">
                 {props.collection.files.map((file) => (
-                  <FolderContent
-                    content={file}
-                    handleDelete={handleDeleteNote}
-                    handleRename={handleRenameNote}
-                  />
+                  <React.Fragment key={file.$id}>
+                    <FolderContent
+                      content={file}
+                      handleDelete={handleDeleteNote}
+                      handleRename={handleRenameNote}
+                    />
+                  </React.Fragment>
                 ))}
 
                 {props.collection.folders.map((folder) => (
-                  <FolderContent
-                    content={folder}
-                    handleDelete={handleDeleteFolder}
-                    handleRename={handleRenameFolder}
-                  />
+                  <React.Fragment key={folder.$id}>
+                    <FolderContent
+                      content={folder}
+                      handleDelete={handleDeleteFolder}
+                      handleRename={handleRenameFolder}
+                    />
+                  </React.Fragment>
                 ))}
               </div>
             </>

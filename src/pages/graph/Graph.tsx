@@ -11,10 +11,13 @@ import {
   getAllNotesAndFolders,
   getConnections,
 } from "../../utils/db";
-import GraphView from "../../components/graph/GraphView";
-import { useNavigate } from "react-router-dom";
+import GraphView from "../../components/visualize/GraphView";
 import { toast } from "sonner";
 import { commonErrorHandling } from "../../utils/helpers";
+import SimpleTidyTree from "../../components/visualize/SimpleTidyTree";
+import RadialTidyTree from "../../components/visualize/RadialTidyTree";
+import Header from "../../components/Header";
+import Sidebar from "../../components/Sidebar";
 
 export default function Graph() {
   const [collection, setCollection] = useState<NotesAndFolder>({
@@ -24,7 +27,9 @@ export default function Graph() {
   const [connections, setConnections] = useState<Resp_Connection[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, loading: userLoading } = useAuthContext();
-  const navigate = useNavigate();
+  const [currentView, setCurrentView] = useState<
+    "graph" | "simple-tidy" | "radial-tidy"
+  >("graph");
 
   useEffect(() => {
     if (!userLoading && user) {
@@ -35,15 +40,15 @@ export default function Graph() {
           resp = await checkForRootFolder(user!.id);
 
           if (resp.error) {
-            toast.error(resp.message)
+            toast.error(resp.message);
             return;
-          };
+          }
 
           const filesAndFolders = await getAllNotesAndFolders(user!.id);
           if (filesAndFolders.error) {
-            toast.error(filesAndFolders.message)
+            toast.error(filesAndFolders.message);
             return;
-          };
+          }
           setCollection({
             files: filesAndFolders.data.files,
             folders: filesAndFolders.data.folders,
@@ -51,9 +56,9 @@ export default function Graph() {
 
           const connections = await getConnections(user!.id);
           if (connections.error) {
-            toast.error(connections.message)
+            toast.error(connections.message);
             return;
-          };
+          }
 
           setConnections(connections.data);
           setLoading(false);
@@ -69,72 +74,59 @@ export default function Graph() {
   }, [user, userLoading]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="font-lora flex justify-center items-center h-[100vh]">
+        Good things come to those who wait...
+      </div>
+    );
   }
-
-  // Prepare nodes and links based on folders, files, and connections
-  const nodes = [
-    ...collection.folders.map((folder) => ({
-      id: folder.$id,
-      title: folder.title,
-      group: 1, // Folder group
-      type: folder.type,
-      is_root: folder.is_root,
-    })),
-    ...collection.files.map((file) => ({
-      id: file.$id,
-      title: file.title,
-      group: 2, // File group
-      type: file.type,
-    })),
-  ];
-
-  const links = [
-    // Link between files/folders and their parent folders
-    ...collection.files.map((file) => ({
-      source: file.parent_id,
-      target: file.$id,
-    })),
-    ...collection.folders
-      .filter((folder) => folder.parent_id)
-      .map((folder) => ({ source: folder.parent_id!, target: folder.$id })),
-
-    // Link between items in destination_ids and source_id
-    ...connections.flatMap((connection) =>
-      connection.destination_ids
-        .filter(
-          (destination_id) =>
-            collection.files.find(
-              (note) => note.$id === JSON.parse(destination_id).id
-            ) !== undefined
-        )
-        .map((destination_id) => ({
-          source: connection.source_id,
-          target: JSON.parse(destination_id).id,
-        }))
-    ),
-  ];
-
-  const handleClickNode = (node: {
-    type: string;
-    id: string;
-    is_root?: boolean;
-  }) => {
-    if (node.type === "file") {
-      navigate(`/note/${node.id}`);
-    } else if (node.type === "folder") {
-      if (node.is_root) {
-        navigate("/folder");
-      } else {
-        navigate(`/folder/${node.id}`);
-      }
-    }
-  };
 
   return (
     <div>
+      <Header />
       {!loading && (
-        <GraphView nodes={nodes} links={links} onClickNode={handleClickNode} />
+        <div className="flex ">
+          <Sidebar reload={loading} />
+          <div className="w-[100%] md:w-[80%]">
+            <div className="flex items-center justify-center gap-0 mt-4">
+              <button
+                className={`border border-neutral-200 px-4 py-1 rounded-l ${
+                  currentView === "graph" && "bg-neutral-200"
+                }`}
+                onClick={() => setCurrentView("graph")}
+              >
+                Graph
+              </button>
+              <button
+                className={`border border-neutral-200 px-4 py-1 ${
+                  currentView === "simple-tidy" && "bg-neutral-200"
+                }`}
+                onClick={() => setCurrentView("simple-tidy")}
+              >
+                Simple Tree
+              </button>
+              <button
+                className={`border border-neutral-200 px-4 py-1 rounded-r ${
+                  currentView === "radial-tidy" && "bg-neutral-200"
+                }`}
+                onClick={() => setCurrentView("radial-tidy")}
+              >
+                Radial Tree
+              </button>
+            </div>
+            <>
+              {currentView === "graph" && (
+                <GraphView collection={collection} connections={connections} />
+              )}
+              {currentView === "simple-tidy" && (
+                <SimpleTidyTree collection={collection} />
+              )}
+              {currentView === "radial-tidy" && (
+                <RadialTidyTree collection={collection} />
+              )}
+            </>
+          </div>
+        </div>
       )}
     </div>
   );
