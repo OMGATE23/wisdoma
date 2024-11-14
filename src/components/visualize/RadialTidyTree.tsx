@@ -137,7 +137,7 @@ export default function RadialTidyTree(props: Props) {
     const height = width * 0.5;
     const cx = width * 0.5;
     const cy = height * 0.5;
-    const radius = Math.min(width, height) / 4 - 30;
+    const radius = Math.min(width, height) / 3 - 30;
 
     const tree = d3
       .tree<TidyTreeData>()

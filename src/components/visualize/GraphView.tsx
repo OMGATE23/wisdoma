@@ -189,18 +189,6 @@ export default function Graphe(props: Props) {
       .on('mouseout', handleMouseOut)
       .on('click', (_, d) => handleClickNode(d));
 
-    const titles = svg
-      .append('g')
-      .selectAll('text')
-      .data(nodesCopy.filter(d => d.type === 'folder' && d.is_root !== true))
-      .join('text')
-      .attr('font-size', 12)
-      .attr('dx', 15)
-      .attr('dy', '.35em')
-      .text(d => d.title);
-
-    node.append('title').text(d => d.id);
-
     function ticked() {
       link
         .attr('x1', d => (d.source as Node).x!)
@@ -209,7 +197,6 @@ export default function Graphe(props: Props) {
         .attr('y2', d => (d.target as Node).y!);
 
       node.attr('cx', d => d.x!).attr('cy', d => d.y!);
-      titles.attr('x', d => d.x! + 5).attr('y', d => d.y!);
     }
 
     function drag(simulation: d3.Simulation<Node, Link>) {

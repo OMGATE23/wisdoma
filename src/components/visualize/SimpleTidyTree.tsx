@@ -139,7 +139,7 @@ export default function SimpleTidyTree(props: Props) {
     const width = window.innerWidth * 0.8;
 
     const root = d3.hierarchy(data);
-    const dx = 50;
+    const dx = 60;
     const dy = (width * 0.9) / (root.height + 1);
 
     const tree = d3.tree<TidyTreeData>().nodeSize([dx, dy]);
